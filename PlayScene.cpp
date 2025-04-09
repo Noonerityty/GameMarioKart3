@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <fstream>
 #include "AssetIDs.h"
 
@@ -112,14 +112,15 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			DebugOut(L"[ERROR] MARIO object was created before!\n");
 			return;
 		}
-		obj = new CMario(x,y); 
-		player = (CMario*)obj;  
+		player = new CMario(x, y); 
+		//obj = new CMario(x,y); 
+		//player = (CMario*)obj;  
 
 		DebugOut(L"[INFO] Player object has been created!\n");
 		break;
-	case OBJECT_TYPE_GOOMBA: obj = new CGoomba(x,y); break;
-	case OBJECT_TYPE_BRICK: obj = new CBrick(x,y); break;
-	case OBJECT_TYPE_COIN: obj = new CCoin(x, y); break;
+	case OBJECT_TYPE_GOOMBA: obj = new CGoomba(x, y); enemies.push_back(obj); break;
+	case OBJECT_TYPE_BRICK: obj = new CBrick(x, y); blocks.push_back(obj);	break;
+	case OBJECT_TYPE_COIN: obj = new CCoin(x, y);	blocks.push_back(obj);	break;
 
 	case OBJECT_TYPE_PLATFORM:  
 	{
@@ -137,16 +138,19 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			cell_width, cell_height, length,
 			isCloud ,sprite_begin, sprite_middle, sprite_end
 		);
-
+		blocks.push_back(obj);
 		break;
 	}
-	case OBJECT_TYPE_SINGLE_PLATFORM:// th�m platformid = 6
+	case OBJECT_TYPE_SINGLE_PLATFORM:// thêm platformid = 6
 	{
 		float cell_width = (float)atof(tokens[3].c_str());
 		float cell_height = (float)atof(tokens[4].c_str());
-		int sprite_id = atoi(tokens[5].c_str());
+		bool isCloud = (bool)atoi(tokens[5].c_str());
+		int sprite_id = atoi(tokens[6].c_str());
+		
 
-		obj = new CSinglePlatform(x, y, cell_width, cell_height, sprite_id);
+		obj = new CSinglePlatform(x, y, cell_width, cell_height, isCloud,sprite_id);
+		blocks.push_back(obj);
 		break;
 	}
 
@@ -156,6 +160,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		float b = (float)atof(tokens[4].c_str());
 		int scene_id = atoi(tokens[5].c_str());
 		obj = new CPortal(x, y, r, b, scene_id);
+		objects.push_back(obj);
 	}
 	break;
 
@@ -166,10 +171,24 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	}
 
 	// General object setup
-	obj->SetPosition(x, y);
+	//obj->SetPosition(x, y);
 
 
-	objects.push_back(obj);
+	//objects.push_back(obj);
+
+}
+
+void CPlayScene::LayerManagement()
+{
+	for (size_t i = 0; i < blocks.size(); i++)
+	{
+		objects.push_back(blocks[i]);
+	}
+	for (size_t i = 0; i < enemies.size(); i++)
+	{
+		objects.push_back(enemies[i]);
+	}
+	objects.push_back(player);
 }
 
 void CPlayScene::LoadAssets(LPCWSTR assetFile)
@@ -239,6 +258,9 @@ void CPlayScene::Load()
 
 	f.close();
 
+	//sắp xếp các layer:
+	LayerManagement();
+
 	DebugOut(L"[INFO] Done loading scene  %s\n", sceneFilePath);
 }
 
@@ -246,9 +268,10 @@ void CPlayScene::Update(DWORD dt)
 {
 	// We know that Mario is the first object in the list hence we won't add him into the colliable object list
 	// TO-DO: This is a "dirty" way, need a more organized way 
+	
 
 	vector<LPGAMEOBJECT> coObjects;
-	for (size_t i = 1; i < objects.size(); i++)
+	for (size_t i = 0; i < objects.size() -1; i++)
 	{
 		coObjects.push_back(objects[i]);
 	}

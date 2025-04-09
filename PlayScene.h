@@ -13,7 +13,9 @@ class CPlayScene: public CScene
 {
 protected: 
 	// A play scene has to have player, right? 
-	LPGAMEOBJECT player;					
+	LPGAMEOBJECT player;
+	vector<LPGAMEOBJECT> enemies;
+	vector<LPGAMEOBJECT> blocks;
 
 	vector<LPGAMEOBJECT> objects;
 
@@ -37,6 +39,7 @@ public:
 
 	void Clear();
 	void PurgeDeletedObjects();
+	void LayerManagement();
 
 	static bool IsGameObjectDeleted(const LPGAMEOBJECT& o);
 };

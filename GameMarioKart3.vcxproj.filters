@@ -155,6 +155,9 @@
     <ClInclude Include="SinglePlatform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SolidBlock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="brick.txt" />

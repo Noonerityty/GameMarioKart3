@@ -14,3 +14,16 @@ void CSinglePlatform::GetBoundingBox(float& l, float& t, float& r, float& b)
 	r = l + this->cellWidth;
 	b = t + this->cellHeight;
 }
+int CSinglePlatform::IsDirectionColliable(float nx, float ny)
+{
+	if (this->isCloud)
+	{
+		if (nx == 0 && ny == -1) return 1;
+		else return 0;
+	}
+	else
+	{
+		if (nx == 0 && ny == -1) return 1;
+		else return 1;
+	}
+}
