@@ -10,6 +10,8 @@
 #include "Coin.h"
 #include "Platform.h"
 #include "SinglePlatform.h"
+#include "LayerBackGround.h"
+#include "VerticalPlatform.h"
 
 #include "SampleKeyEventHandler.h"
 
@@ -141,6 +143,19 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		blocks.push_back(obj);
 		break;
 	}
+	case OBJECT_TYPE_VERTICAL_PLATFORM:
+	{
+		float cell_width = (float)atof(tokens[3].c_str());
+		float cell_height = (float)atof(tokens[4].c_str());
+		int length = atoi(tokens[5].c_str());
+		int sprite_begin = atoi(tokens[6].c_str());
+		int sprite_middle = atoi(tokens[7].c_str());
+		int sprite_end = atoi(tokens[8].c_str());
+
+		obj = new CVerticalPlatform(x, y, cell_width, cell_height, length, sprite_begin, sprite_middle, sprite_end);
+		blocks.push_back(obj);
+		break;
+	}
 	case OBJECT_TYPE_SINGLE_PLATFORM:// thêm platformid = 6
 	{
 		float cell_width = (float)atof(tokens[3].c_str());
@@ -151,6 +166,15 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 		obj = new CSinglePlatform(x, y, cell_width, cell_height, isCloud,sprite_id);
 		blocks.push_back(obj);
+		break;
+	}
+	case OBJECT_TYPE_LAYER_BLOCK: // quản lý các layer background
+	{
+		float cell_width = (float)atof(tokens[3].c_str());
+		float cell_height = (float)atof(tokens[4].c_str());
+		int sprite_id = atoi(tokens[5].c_str());
+		obj = new CLayerBackGround(x, y, cell_width, cell_height, sprite_id);
+		objects.push_back(obj); // không push vào blocks vì thứ tự các layer block luôn xếp cuối
 		break;
 	}
 

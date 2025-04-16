@@ -81,6 +81,12 @@
     <ClCompile Include="SinglePlatform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="LayerBackGround.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VerticalPlatform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h">
@@ -155,7 +161,10 @@
     <ClInclude Include="SinglePlatform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SolidBlock.h">
+    <ClInclude Include="LayerBackGround.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VerticalPlatform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -170,6 +179,8 @@
     <Text Include="scene02.txt" />
     <Text Include="scene0005.txt" />
     <Text Include="SinglePlatform.txt" />
+    <Text Include="LayerBackGround.txt" />
+    <Text Include="waterPipe.txt" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="mario.ico">

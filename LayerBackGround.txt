@@ -1,0 +1,15 @@
+#id left top right bottom texture_id
+[SPRITES]
+#Khoi xanh layer  block1 width = 31 height = 47
+70001	288	368	319	415	30
+#Khoi cam1 layer  block2 width = 31 height = 47
+70002	480	368	511	415	30
+#KHoi cam2 layer block2 width = 15 height = 15
+70003	512	368	527	383	30
+#Khoi trang layer block2 width = 47 height = 47
+70004	528	335	575	383	30
+#Khoi co Block1 width = 127 height = 63
+70005	16	352	143	415	30
+#Khoi co block2 width = 190	height = 63
+70006	817	336	1007	399	30
+[ANIMATIONS]

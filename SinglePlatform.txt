@@ -4,4 +4,14 @@
 60002	624	400	1087	431	30
 #Khoi cam block1 width = 47 height = 47
 60003	240	368	287	415	30
+#Khoi xanh block1 width = 47 height = 31
+60004	272	336	319	367	30
+#Khoi xanh la 1 block 2 width = 79 height = 47
+60005	400	368	479	415	30
+#Khoi cam block 2 width = 63 height = 31
+60006	464	336	527	367	30
+#KHoi trang block 2 width = 63 height = 31
+60007	512	304	575	335	30
+#Khoi xanh la 2 block 2 width = 95 height = 31
+60008	512	384	607	415	30
 [ANIMATIONS]
