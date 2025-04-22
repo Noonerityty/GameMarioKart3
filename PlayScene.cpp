@@ -12,6 +12,7 @@
 #include "SinglePlatform.h"
 #include "LayerBackGround.h"
 #include "VerticalPlatform.h"
+#include "QuestionBlock.h"
 
 #include "SampleKeyEventHandler.h"
 
@@ -122,7 +123,12 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		break;
 	case OBJECT_TYPE_GOOMBA: obj = new CGoomba(x, y); enemies.push_back(obj); break;
 	case OBJECT_TYPE_BRICK: obj = new CBrick(x, y); blocks.push_back(obj);	break;
-	case OBJECT_TYPE_COIN: obj = new CCoin(x, y);	blocks.push_back(obj);	break;
+	case OBJECT_TYPE_COIN:
+	{ 
+		int state = atoi(tokens[3].c_str());
+		obj = new CCoin(x, y, state);	blocks.push_back(obj);	
+		break; 
+	}
 
 	case OBJECT_TYPE_PLATFORM:  
 	{
@@ -175,6 +181,12 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		int sprite_id = atoi(tokens[5].c_str());
 		obj = new CLayerBackGround(x, y, cell_width, cell_height, sprite_id);
 		objects.push_back(obj); // không push vào blocks vì thứ tự các layer block luôn xếp cuối
+		break;
+	}
+	case OBJECT_TYPE_QUESTION_BLOCK:
+	{
+		int itemType = atoi(tokens[3].c_str());
+		blocks.push_back(new CQuestionBlock(x, y, itemType));
 		break;
 	}
 
@@ -288,6 +300,7 @@ void CPlayScene::Load()
 	DebugOut(L"[INFO] Done loading scene  %s\n", sceneFilePath);
 }
 
+
 void CPlayScene::Update(DWORD dt)
 {
 	// We know that Mario is the first object in the list hence we won't add him into the colliable object list
@@ -295,10 +308,12 @@ void CPlayScene::Update(DWORD dt)
 	
 
 	vector<LPGAMEOBJECT> coObjects;
-	for (size_t i = 0; i < objects.size() -1; i++)
+	for (size_t i = 0; i < objects.size(); i++)
 	{
+		if (objects[i] == player) continue; // skip player
 		coObjects.push_back(objects[i]);
 	}
+
 
 	for (size_t i = 0; i < objects.size(); i++)
 	{
@@ -379,4 +394,8 @@ void CPlayScene::PurgeDeletedObjects()
 	objects.erase(
 		std::remove_if(objects.begin(), objects.end(), CPlayScene::IsGameObjectDeleted),
 		objects.end());
+}
+void CPlayScene::AddObject(LPGAMEOBJECT obj)
+{
+	objects.push_back(obj);
 }

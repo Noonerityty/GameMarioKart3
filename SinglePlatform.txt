@@ -1,7 +1,9 @@
 #id left top right bottom texture_id
 [SPRITES]
+#Yellow brick
 60001	0	416	624	431	30
 60002	624	400	1087	431	30
+60009	1152	416	1503	431	30
 #Khoi cam block1 width = 47 height = 47
 60003	240	368	287	415	30
 #Khoi xanh block1 width = 47 height = 31
@@ -14,4 +16,10 @@
 60007	512	304	575	335	30
 #Khoi xanh la 2 block 2 width = 95 height = 31
 60008	512	384	607	415	30
+#Khoi xanh la block 3	width = 111	height = 31
+60010	1264	384	1375	415	30
+#Khoi cam block 3 width = 111	height	=	31
+60011	1296	352	1407	383	30
+#Khoi xanh block 3 width = 111 height = 31
+60012	1328	320	1439	351	30
 [ANIMATIONS]

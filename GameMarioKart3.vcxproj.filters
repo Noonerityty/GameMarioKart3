@@ -87,6 +87,9 @@
     <ClCompile Include="VerticalPlatform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="QuestionBlock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h">
@@ -167,6 +170,9 @@
     <ClInclude Include="VerticalPlatform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="QuestionBlock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="brick.txt" />
@@ -181,6 +187,7 @@
     <Text Include="SinglePlatform.txt" />
     <Text Include="LayerBackGround.txt" />
     <Text Include="waterPipe.txt" />
+    <Text Include="QuestionBlock.txt" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="mario.ico">

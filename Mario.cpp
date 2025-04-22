@@ -7,6 +7,7 @@
 #include "Goomba.h"
 #include "Coin.h"
 #include "Portal.h"
+#include "QuestionBlock.h"
 
 #include "Collision.h"
 
@@ -53,6 +54,9 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 		OnCollisionWithCoin(e);
 	else if (dynamic_cast<CPortal*>(e->obj))
 		OnCollisionWithPortal(e);
+	else if (dynamic_cast<CQuestionBlock*>(e->obj))
+		OnClollisionWithQuestionBlock(e);
+
 }
 
 void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
@@ -94,7 +98,12 @@ void CMario::OnCollisionWithCoin(LPCOLLISIONEVENT e)
 	e->obj->Delete();
 	coin++;
 }
+void CMario::OnClollisionWithQuestionBlock(LPCOLLISIONEVENT e)
+{
+	CQuestionBlock* qblock = dynamic_cast<CQuestionBlock*>(e->obj);
+	qblock->OnCollisionWithMario(e);
 
+}
 void CMario::OnCollisionWithPortal(LPCOLLISIONEVENT e)
 {
 	CPortal* p = (CPortal*)e->obj;
@@ -279,14 +288,14 @@ void CMario::SetState(int state)
 		if (isOnPlatform)
 		{
 			if (abs(this->vx) == MARIO_RUNNING_SPEED)
-				vy = -MARIO_JUMP_RUN_SPEED_Y;
+				vy = -MARIO_JUMP_RUN_SPEED_Y*1.2;
 			else
-				vy = -MARIO_JUMP_SPEED_Y;
+				vy = -MARIO_JUMP_SPEED_Y *1.1;
 		}
 		break;
 
 	case MARIO_STATE_RELEASE_JUMP:
-		if (vy < 0) vy += MARIO_JUMP_SPEED_Y / 2;
+		if (vy < 0) vy += MARIO_JUMP_SPEED_Y / 3 /* normal la 2*/;
 		break;
 
 	case MARIO_STATE_SIT:
