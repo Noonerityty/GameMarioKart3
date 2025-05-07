@@ -5,6 +5,7 @@
 #include "Textures.h"
 #include "Game.h"
 #include "Coin.h"
+#include "Mushroom.h"
 void CQuestionBlock::OnCollisionWithMario(LPCOLLISIONEVENT e)
 {
 	
@@ -19,16 +20,28 @@ void CQuestionBlock::OnCollisionWithMario(LPCOLLISIONEVENT e)
 			{
 				//Tạo coin nảy
 				CCoin* coin = new CCoin(this->x, this->y, 1);
-				
-				CPlayScene* scene = dynamic_cast<CPlayScene*>(CGame::GetInstance()->GetCurrentScene());
-				if (scene)
+				CScene* currentScene = CGame::GetInstance()->GetCurrentScene();
+				CPlayScene* playscene = dynamic_cast<CPlayScene*>(currentScene);
+
+				if (playscene)
 				{
 					coin->SetState(COIN_STATE_JUMP);
-					scene->AddObject(coin);
+					playscene->AddObject(coin);
 				
 				}
 				
 				
+			}
+			else if (itemType == 1)
+			{
+				//Tạo nấm nảy
+				CMushroom* mushroom = new CMushroom(this->x, this->y);
+				CPlayScene* scene = dynamic_cast<CPlayScene*>(CGame::GetInstance()->GetCurrentScene());
+				if (scene)
+				{
+					mushroom->SetState(MUSHROOM_STATE_IDLE);
+					scene->AddObject(mushroom);
+				}
 			}
 		}
 	
@@ -37,10 +50,9 @@ void CQuestionBlock::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	if (isBouncing)
 	{
-		if (GetTickCount() - bounceStartTime < 120) // Bounce for 300 ms
+		if (GetTickCount64() - bounceStartTime < 120)
 		{
-			DebugOutTitle(L"Bounce time: %d", GetTickCount() - bounceStartTime);
-			this->y = startY - 5 * sin((GetTickCount() - bounceStartTime) * 0.005); // Simple sine wave for bouncing effect
+			this->y = startY - 5 * sin((GetTickCount64() - bounceStartTime) * 0.005); // Simple sine wave for bouncing effect
 		}
 		else
 		{

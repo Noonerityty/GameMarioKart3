@@ -4,6 +4,9 @@
 60001	0	416	624	431	30
 60002	624	400	1087	431	30
 60009	1152	416	1503	431	30
+60013	1536	416	1615	431	30
+60014	1664	416	2239	431	30
+60015	2256	416	2815	431	30
 #Khoi cam block1 width = 47 height = 47
 60003	240	368	287	415	30
 #Khoi xanh block1 width = 47 height = 31
@@ -18,8 +21,34 @@
 60008	512	384	607	415	30
 #Khoi xanh la block 3	width = 111	height = 31
 60010	1264	384	1375	415	30
-#Khoi cam block 3 width = 111	height	=	31
+#Khoi cam  duoi block 3 width = 111	height	=	31
 60011	1296	352	1407	383	30
+#Khoi cam tren block 3 witdh =63 height = 31
+60016	1312	144	1375	175	30
 #Khoi xanh block 3 width = 111 height = 31
 60012	1328	320	1439	351	30
+#Khoi cam block 4 width = 47 height = 47
+60017	2144	368	2191	415	30
+#Khoi xanh block 4 width = 47 height = 95
+60018	2176	272	2223	367	30
+
+#Blue brick
+#Khoi hinh chu nhat dung 1 width=127 height=191
+60019	1967	433	2094	624	30
+#Khoi hinh chu nhat dung 2 width=127 height=191
+60020	2351	433	2478	624	30
+#Khoi hinh chu nhat dung 3 width=47 height=95
+60023	2303	497	2350	592	30
+#Khoi hinh chu nhat nam 1 width=255 height=31
+60021	2095	593	2350	624	30
+#Khoi hinh chu nhat nam 2 width=191 height=15
+60022	2127	433	2318	448	30
+#Khoi hinh chu nhat nam 3 width=31 height=15
+60024	2223	577	2254	592	30
+#Khoi hinh vuong 1 width=15 height=15
+60025	2239	561	2254	576	30
+#Khoi hinh vuong 2 width=47 height=47
+60026	2255	545	2302	592	30
+
+
 [ANIMATIONS]

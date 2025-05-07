@@ -13,6 +13,7 @@
 #include "LayerBackGround.h"
 #include "VerticalPlatform.h"
 #include "QuestionBlock.h"
+#include "Mushroom.h"
 
 #include "SampleKeyEventHandler.h"
 
@@ -189,6 +190,13 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		blocks.push_back(new CQuestionBlock(x, y, itemType));
 		break;
 	}
+	case OBJECT_TYPE_MUSHROOM:
+	{
+
+		obj = new CMushroom(x, y);
+		blocks.push_back(obj);
+		break;
+	}
 
 	case OBJECT_TYPE_PORTAL:
 	{
@@ -198,6 +206,8 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		obj = new CPortal(x, y, r, b, scene_id);
 		objects.push_back(obj);
 	}
+
+
 	break;
 
 
@@ -333,7 +343,7 @@ void CPlayScene::Update(DWORD dt)
 
 	if (cx < 0) cx = 0;
 
-	CGame::GetInstance()->SetCamPos(cx, 0.0f /*cy*/);
+	CGame::GetInstance()->SetCamPos(cx, cy /*cy*/);
 
 	PurgeDeletedObjects();
 }

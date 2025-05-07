@@ -60,9 +60,10 @@ void CCoin::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			isFalling = true;
 		}
 
-		if (isFalling && y == startY)
+		if (y > startY)
 		{
 			this->Delete();
+			return;
 		}
 		
 

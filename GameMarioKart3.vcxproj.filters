@@ -90,6 +90,9 @@
     <ClCompile Include="QuestionBlock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Mushroom.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h">
@@ -173,6 +176,9 @@
     <ClInclude Include="QuestionBlock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Mushroom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="brick.txt" />
@@ -188,6 +194,7 @@
     <Text Include="LayerBackGround.txt" />
     <Text Include="waterPipe.txt" />
     <Text Include="QuestionBlock.txt" />
+    <Text Include="Mushroom.txt" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="mario.ico">

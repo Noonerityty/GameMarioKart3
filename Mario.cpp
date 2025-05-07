@@ -8,6 +8,7 @@
 #include "Coin.h"
 #include "Portal.h"
 #include "QuestionBlock.h"
+#include "Mushroom.h"
 
 #include "Collision.h"
 
@@ -56,6 +57,8 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 		OnCollisionWithPortal(e);
 	else if (dynamic_cast<CQuestionBlock*>(e->obj))
 		OnClollisionWithQuestionBlock(e);
+	else if (dynamic_cast<CMushroom*>(e->obj))
+		OnCollisionWithMushroom(e);
 
 }
 
@@ -98,10 +101,23 @@ void CMario::OnCollisionWithCoin(LPCOLLISIONEVENT e)
 	e->obj->Delete();
 	coin++;
 }
+void CMario::OnCollisionWithMushroom(LPCOLLISIONEVENT e)
+{
+	CMushroom* mushroom = dynamic_cast<CMushroom*>(e->obj);
+	if (mushroom->GetState() != MUSHROOM_STATE_DIE)
+	{
+		if (level == MARIO_LEVEL_SMALL)
+		{
+			SetLevel(MARIO_LEVEL_BIG);
+			mushroom->SetState(MUSHROOM_STATE_DIE);
+		}
+	}
+}
 void CMario::OnClollisionWithQuestionBlock(LPCOLLISIONEVENT e)
 {
 	CQuestionBlock* qblock = dynamic_cast<CQuestionBlock*>(e->obj);
 	qblock->OnCollisionWithMario(e);
+	coin++;
 
 }
 void CMario::OnCollisionWithPortal(LPCOLLISIONEVENT e)
@@ -295,7 +311,7 @@ void CMario::SetState(int state)
 		break;
 
 	case MARIO_STATE_RELEASE_JUMP:
-		if (vy < 0) vy += MARIO_JUMP_SPEED_Y / 3 /* normal la 2*/;
+		if (vy < 0) vy += MARIO_JUMP_SPEED_Y / 2 /* normal la 2*/;
 		break;
 
 	case MARIO_STATE_SIT:
