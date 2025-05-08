@@ -144,6 +144,8 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mario.cpp" />
     <ClCompile Include="Mushroom.cpp" />
+    <ClCompile Include="Piranha.cpp" />
+    <ClCompile Include="PiranhaBullet.cpp" />
     <ClCompile Include="Platform.cpp" />
     <ClCompile Include="PlayScene.cpp" />
     <ClCompile Include="Portal.cpp" />
@@ -166,6 +168,8 @@
     <ClInclude Include="Coin.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="Mushroom.h" />
+    <ClInclude Include="Piranha.h" />
+    <ClInclude Include="PiranhaBullet.h" />
     <ClInclude Include="QuestionBlock.h" />
     <ClInclude Include="debug.h" />
     <ClInclude Include="Game.h" />
@@ -196,6 +200,8 @@
     <Text Include="mario-sample.txt" />
     <Text Include="mario.txt" />
     <Text Include="Mushroom.txt" />
+    <Text Include="piranha.txt" />
+    <Text Include="piranhaBullet.txt" />
     <Text Include="QuestionBlock.txt" />
     <Text Include="scene0005.txt" />
     <Text Include="scene01.txt" />

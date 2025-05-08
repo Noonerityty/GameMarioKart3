@@ -10,6 +10,8 @@ SinglePlatform.txt
 waterPipe.txt
 QuestionBlock.txt
 Mushroom.txt
+piranha.txt
+piranhaBullet.txt
 #
 [OBJECTS]
 # type	x	y	extra_settings per object type
@@ -17,7 +19,7 @@ Mushroom.txt
 # See OBJECT_TYPE constants in AssetIDs.h
 
 # MARIO
-0	10	10
+0	300	10
 
 
 # SINGLE PLATFORM #toa do x y tinh theo tam
@@ -85,6 +87,8 @@ Mushroom.txt
 9	198	119	1
 #MUSHROOM
 10	215	119
+#PIRANHA
+11	360.5	142.5
 
 
 

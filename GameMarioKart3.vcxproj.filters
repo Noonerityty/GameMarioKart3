@@ -93,6 +93,12 @@
     <ClCompile Include="Mushroom.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Piranha.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PiranhaBullet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h">
@@ -179,6 +185,12 @@
     <ClInclude Include="Mushroom.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Piranha.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PiranhaBullet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="brick.txt" />
@@ -195,6 +207,8 @@
     <Text Include="waterPipe.txt" />
     <Text Include="QuestionBlock.txt" />
     <Text Include="Mushroom.txt" />
+    <Text Include="piranha.txt" />
+    <Text Include="piranhaBullet.txt" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="mario.ico">

@@ -14,6 +14,7 @@
 #include "VerticalPlatform.h"
 #include "QuestionBlock.h"
 #include "Mushroom.h"
+#include "Piranha.h"
 
 #include "SampleKeyEventHandler.h"
 
@@ -181,7 +182,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		float cell_height = (float)atof(tokens[4].c_str());
 		int sprite_id = atoi(tokens[5].c_str());
 		obj = new CLayerBackGround(x, y, cell_width, cell_height, sprite_id);
-		objects.push_back(obj); // không push vào blocks vì thứ tự các layer block luôn xếp cuối
+		layerBacgrounds.push_back(obj); // không push vào blocks vì thứ tự các layer block luôn xếp cuối
 		break;
 	}
 	case OBJECT_TYPE_QUESTION_BLOCK:
@@ -195,6 +196,12 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 		obj = new CMushroom(x, y);
 		blocks.push_back(obj);
+		break;
+	}
+	case OBJECT_TYPE_PIRANHA:
+	{
+		obj = new CPiranha(x, y);
+		piranhas.push_back(obj);
 		break;
 	}
 
@@ -226,6 +233,14 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 void CPlayScene::LayerManagement()
 {
+	for (size_t i = 0; i < layerBacgrounds.size(); i++)
+	{
+		objects.push_back(layerBacgrounds[i]);
+	}
+	for (size_t i = 0; i < piranhas.size(); i++)
+	{
+		objects.push_back(piranhas[i]);
+	}
 	for (size_t i = 0; i < blocks.size(); i++)
 	{
 		objects.push_back(blocks[i]);
@@ -234,6 +249,7 @@ void CPlayScene::LayerManagement()
 	{
 		objects.push_back(enemies[i]);
 	}
+
 	objects.push_back(player);
 }
 

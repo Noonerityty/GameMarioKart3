@@ -9,6 +9,8 @@
 #include "Portal.h"
 #include "QuestionBlock.h"
 #include "Mushroom.h"
+#include "Piranha.h"
+#include "PiranhaBullet.h"
 
 #include "Collision.h"
 
@@ -59,7 +61,37 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 		OnClollisionWithQuestionBlock(e);
 	else if (dynamic_cast<CMushroom*>(e->obj))
 		OnCollisionWithMushroom(e);
+	else if (dynamic_cast<CPiranha*>(e->obj))
+		OnCollisionWithPiranha(e);
 
+}
+
+void CMario::OnCollisionWithPiranha(LPCOLLISIONEVENT e)
+{
+	CPiranha* piranha = dynamic_cast<CPiranha*>(e->obj);
+	if (e->ny < 0)
+	{
+
+	}
+	else
+	{
+		if (untouchable == 0)
+		{
+			if (piranha->GetState() != PIRANHA_STATE_DIE && piranha->GetState() != PIRANHA_STATE_HIDDEN)
+			{
+				if (level > MARIO_LEVEL_SMALL)
+				{
+					level = MARIO_LEVEL_SMALL;
+					StartUntouchable();
+				}
+				else
+				{
+					DebugOut(L">>> Mario DIE >>> \n");
+					SetState(MARIO_STATE_DIE);
+				}
+			}
+		}
+	}
 }
 
 void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)

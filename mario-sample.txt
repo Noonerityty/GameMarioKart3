@@ -19,3 +19,5 @@ height	240
 20	textures\misc.png
 30	textures\stage1_1map.png
 40	textures\questionBlock.png
+50	textures\piranha.png
+60	textures\piranhaRight.png

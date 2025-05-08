@@ -15,6 +15,8 @@ protected:
 	// A play scene has to have player, right? 
 	LPGAMEOBJECT player;
 	vector<LPGAMEOBJECT> enemies;
+	vector<LPGAMEOBJECT> piranhas;
+	vector<LPGAMEOBJECT> layerBacgrounds;
 	vector<LPGAMEOBJECT> blocks;
 
 	vector<LPGAMEOBJECT> objects;
