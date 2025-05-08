@@ -42,8 +42,8 @@ void CPiranha::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		case PIRANHA_STATE_HIDDEN:
 		{
 			y = startY;
-			float distance = DistanceMario();
-			if (distance < PIRANHA_ACTIVE_ZONE_X && distance > PIRANHA_SAFE_ZONE_X)
+			/*float distance = DistanceMario();*/
+			if (IsMarioActiveZone())
 			{
 				
 				if (timer > PIRANHA_HIDE_TIME)
@@ -148,6 +148,22 @@ int CPiranha::GetMarioRegion()
 		return 3; //Mario ở phải dưới
 	}
 
+}
+bool CPiranha::IsMarioActiveZone()
+{
+	CScene* currentScene = CGame::GetInstance()->GetCurrentScene();
+	CPlayScene* playscene = dynamic_cast<CPlayScene*>(currentScene);
+	CMario* mario = (CMario*)playscene->GetPlayer();
+	if (mario == NULL)
+		return false;
+	float marioX, marioY;
+	mario->GetPosition(marioX, marioY);
+	float dx = abs(marioX - this->x);
+	if (dx < PIRANHA_ACTIVE_ZONE_X && dx > PIRANHA_SAFE_ZONE_X)
+	{
+		return true;
+	}
+	return false;
 }
 
 

@@ -16,6 +16,19 @@
 
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 {
+	if (isStunned)
+	{
+		vx = 0;
+		vy = 0;
+		if (GetTickCount64() - stunned_start > MARIO_STUNNED_TIME)
+		{
+			isStunned = false;
+			
+		}
+		CGameObject::Update(dt, coObjects);
+		return;
+
+	}
 	vy += ay * dt;
 	vx += ax * dt;
 
@@ -63,7 +76,31 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 		OnCollisionWithMushroom(e);
 	else if (dynamic_cast<CPiranha*>(e->obj))
 		OnCollisionWithPiranha(e);
+	else if (dynamic_cast<CPiranhaBullet*>(e->obj))
+		OnCollisionWithPiranhaBullet(e);
 
+}
+
+void CMario::OnCollisionWithPiranhaBullet(LPCOLLISIONEVENT e)
+{
+	CPiranhaBullet* piranhaBullet = dynamic_cast<CPiranhaBullet*>(e->obj);
+	if (untouchable == 0 || isStunned)
+	{
+		
+		
+			if (level > MARIO_LEVEL_SMALL)
+			{
+				level = MARIO_LEVEL_SMALL;
+				StartUntouchable();
+				StartStunned();
+			}
+			else
+			{
+				DebugOut(L">>> Mario DIE >>> \n");
+				SetState(MARIO_STATE_DIE);
+			}
+		
+	}
 }
 
 void CMario::OnCollisionWithPiranha(LPCOLLISIONEVENT e)
@@ -75,7 +112,7 @@ void CMario::OnCollisionWithPiranha(LPCOLLISIONEVENT e)
 	}
 	else
 	{
-		if (untouchable == 0)
+		if (untouchable == 0 || isStunned)
 		{
 			if (piranha->GetState() != PIRANHA_STATE_DIE && piranha->GetState() != PIRANHA_STATE_HIDDEN)
 			{
@@ -83,6 +120,7 @@ void CMario::OnCollisionWithPiranha(LPCOLLISIONEVENT e)
 				{
 					level = MARIO_LEVEL_SMALL;
 					StartUntouchable();
+					StartStunned();
 				}
 				else
 				{
@@ -109,7 +147,7 @@ void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 	}
 	else // hit by Goomba
 	{
-		if (untouchable == 0)
+		if (untouchable == 0 || isStunned)
 		{
 			if (goomba->GetState() != GOOMBA_STATE_DIE)
 			{
@@ -142,6 +180,7 @@ void CMario::OnCollisionWithMushroom(LPCOLLISIONEVENT e)
 		{
 			SetLevel(MARIO_LEVEL_BIG);
 			mushroom->SetState(MUSHROOM_STATE_DIE);
+			StartStunned();
 		}
 	}
 }

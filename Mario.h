@@ -100,6 +100,7 @@
 
 
 #define MARIO_UNTOUCHABLE_TIME 2500
+#define MARIO_STUNNED_TIME 1000
 
 class CMario : public CGameObject
 {
@@ -111,8 +112,10 @@ class CMario : public CGameObject
 	int level; 
 	int untouchable; 
 	ULONGLONG untouchable_start;
+	ULONGLONG stunned_start;
 	BOOLEAN isOnPlatform;
 	int coin; 
+	bool isStunned = false;
 
 	void OnCollisionWithGoomba(LPCOLLISIONEVENT e);
 	void OnCollisionWithCoin(LPCOLLISIONEVENT e);
@@ -155,6 +158,7 @@ public:
 
 	void SetLevel(int l);
 	void StartUntouchable() { untouchable = 1; untouchable_start = GetTickCount64(); }
+	void StartStunned() { if(!isStunned) isStunned = true; stunned_start = GetTickCount64(); }
 
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 };
