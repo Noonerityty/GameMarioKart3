@@ -15,6 +15,7 @@
 #include "QuestionBlock.h"
 #include "Mushroom.h"
 #include "Piranha.h"
+#include "ParaGoomba.h"
 
 #include "SampleKeyEventHandler.h"
 
@@ -123,7 +124,16 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 		DebugOut(L"[INFO] Player object has been created!\n");
 		break;
-	case OBJECT_TYPE_GOOMBA: obj = new CGoomba(x, y); enemies.push_back(obj); break;
+	case OBJECT_TYPE_GOOMBA:
+	{
+		
+		obj = new CGoomba(x, y); enemies.push_back(obj); break;
+	}
+	case OBJECT_TYPE_PARAGOOMBA:
+	{
+		obj = new CParaGoomba(x, y); enemies.push_back(obj); break;
+
+	}
 	case OBJECT_TYPE_BRICK: obj = new CBrick(x, y); blocks.push_back(obj);	break;
 	case OBJECT_TYPE_COIN:
 	{ 

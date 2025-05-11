@@ -21,3 +21,4 @@ height	240
 40	textures\questionBlock.png
 50	textures\piranha.png
 60	textures\piranhaRight.png
+70	textures\paraGoomba.png
