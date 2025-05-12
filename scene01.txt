@@ -12,6 +12,8 @@ QuestionBlock.txt
 Mushroom.txt
 piranha.txt
 piranhaBullet.txt
+koopa.txt
+
 #
 [OBJECTS]
 # type	x	y	extra_settings per object type
@@ -21,8 +23,8 @@ piranhaBullet.txt
 # MARIO
 0	10	10
 #GOMBA
-2	220	10
-12	200	10
+13	220	10
+
 
 
 #coin

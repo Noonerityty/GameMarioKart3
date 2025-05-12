@@ -1,0 +1,16 @@
+# id	left	top	right	bottom	texture_id
+[SPRITES]
+#GREENKOOPA
+#WALKING 
+120000	0	252	15	277	50
+120001	16	252	31	278	50
+#ShellIdle
+120002	32	249	47	264	50
+
+
+
+# ani_id	sprite1_id	time1	sprite2_id	time2	...
+[ANIMATIONS]
+125001	120000	300	120001	300
+125002	120002	300
+

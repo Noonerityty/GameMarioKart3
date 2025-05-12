@@ -11,6 +11,7 @@
 #include "Mushroom.h"
 #include "Piranha.h"
 #include "PiranhaBullet.h"
+#include "Koopa.h"
 
 #include "Collision.h"
 
@@ -78,8 +79,12 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 		OnCollisionWithPiranha(e);
 	else if (dynamic_cast<CPiranhaBullet*>(e->obj))
 		OnCollisionWithPiranhaBullet(e);
+	else if (dynamic_cast<CKoopa*>(e->obj))
+		OnCollisionWithKoopa(e);
+
 
 }
+
 
 void CMario::OnCollisionWithPiranhaBullet(LPCOLLISIONEVENT e)
 {
