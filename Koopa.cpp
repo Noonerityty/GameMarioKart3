@@ -1,8 +1,9 @@
-#include "Koopa.h"
+﻿#include "Koopa.h"
+#include"debug.h"
 
 void CKoopa::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
-	if (state == KOOPA_STATE_SHELL_IDLE || state == KOOPA_STATE_SHELL_MOVING)
+	if (state == KOOPA_STATE_SHELL_IDLE || state == KOOPA_STATE_SHELL_MOVING || state == KOOPA_STATE_SHELL_EXIT)
 	{
 		left = x - KOOPA_BBOX_SHELL_WIDTH / 2;
 		top = y - KOOPA_BBOX_SHELL_HEIGHT / 2;
@@ -11,6 +12,7 @@ void CKoopa::GetBoundingBox(float& left, float& top, float& right, float& bottom
 	}
 	else
 	{
+		DebugOut(L"[Koopa] GetBoundingBox state = %d\n", state);
 		left = x - KOOPA_BBOX_WIDTH / 2;
 		top = y - KOOPA_BBOX_HEIGHT / 2;
 		right = left + KOOPA_BBOX_WIDTH;
@@ -93,6 +95,10 @@ void CKoopa::SetState(int state)
 	switch (state)
 	{
 	case KOOPA_STATE_WALKING:
+		if (isShell) {
+			y -= (KOOPA_BBOX_HEIGHT - KOOPA_BBOX_SHELL_HEIGHT) / 2.0f; //Để tránh khi chuyển boudingbox mai rùa thành boudingbox đã chui ra thì bị rớt xuông do lồng vào block phía dưới
+			
+		}
 		vx = -KOOPA_WALKING_SPEED;
 		isShell = false;
 		takeDamge = true;
@@ -114,7 +120,7 @@ void CKoopa::SetState(int state)
 		break;
 	case KOOPA_STATE_SHELL_EXIT:
 		vx = 0;
-		isShell = false;
+		isShell = true;
 		state_start = GetTickCount64();
 		break;
 	case KOOPA_STATE_DIE:
@@ -157,17 +163,23 @@ void CKoopa::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 void CKoopa::Render()
 {
-	int aniId = KOOPA_ANI_WALKING;
+	int aniId;
 	switch (state)
 	{
 	case KOOPA_STATE_WALKING:
-		aniId = KOOPA_ANI_WALKING;
+		if (vx > 0)
+			aniId = KOOPA_ANI_WALKING_RIGHT;
+		else
+			aniId = KOOPA_ANI_WALKING_LEFT;
 		break;
 	case KOOPA_STATE_SHELL_IDLE:
 		aniId = KOOPA_ANI_SHELL_IDLE;
 		break;
 	case KOOPA_STATE_SHELL_MOVING:
 		aniId = KOOPA_ANI_SHELL_MOVING;
+		break;
+	case KOOPA_STATE_SHELL_EXIT:
+		aniId = KOOPA_ANI_SHELL_EXIT;
 		break;
 	default:
 		break;

@@ -101,6 +101,10 @@ void CMario::OnCollisionWithKoopa(LPCOLLISIONEVENT e)
 			koopa->SetState(KOOPA_STATE_SHELL_MOVING);
 			
 		}
+		else if (koopa->GetState() == KOOPA_STATE_SHELL_MOVING)
+		{
+			koopa->SetState(KOOPA_STATE_SHELL_IDLE);
+		}
 	}
 	else if (koopa->GetState() == KOOPA_STATE_SHELL_IDLE)
 	{
