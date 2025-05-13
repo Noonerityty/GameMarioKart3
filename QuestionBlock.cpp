@@ -1,49 +1,59 @@
 ﻿#include "QuestionBlock.h"
-#include "Sprite.h"
-#include "Sprites.h"
-#include "PlayScene.h"
-#include "Textures.h"
-#include "Game.h"
-#include "Coin.h"
-#include "Mushroom.h"
-void CQuestionBlock::OnCollisionWithMario(LPCOLLISIONEVENT e)
+
+
+void CQuestionBlock::TriggerQuestionBlock()
+{
+	isBouncing = true;
+	isEmpty = true; // Mark the block as empty after bouncing
+	bounceStartTime = GetTickCount64();
+	startY = y; // Store the starting Y position for bouncing
+	if (itemType == 0)
+	{
+		//Tạo coin nảy
+		CCoin* coin = new CCoin(this->x, this->y, 1);
+		CScene* currentScene = CGame::GetInstance()->GetCurrentScene();
+		CPlayScene* playscene = dynamic_cast<CPlayScene*>(currentScene);
+
+		if (playscene)
+		{
+			coin->SetState(COIN_STATE_JUMP);
+			playscene->AddObject(coin);
+
+		}
+
+
+	}
+	else if (itemType == 1)
+	{
+		//Tạo nấm nảy
+		CMushroom* mushroom = new CMushroom(this->x, this->y);
+		CPlayScene* scene = dynamic_cast<CPlayScene*>(CGame::GetInstance()->GetCurrentScene());
+		if (scene)
+		{
+			mushroom->SetState(MUSHROOM_STATE_IDLE);
+			scene->AddObject(mushroom);
+		}
+	}
+}
+
+void CQuestionBlock::OnCollisionWith(LPCOLLISIONEVENT e)
 {
 	
-	
-		if (!isBouncing && !isEmpty && e->ny > 0)
+	CKoopa* koopa = dynamic_cast<CKoopa*>(e->obj);
+		if (koopa != NULL && koopa->GetState() == KOOPA_STATE_SHELL_MOVING && e->nx != 0 && !isBouncing && !isEmpty)
 		{
-			isBouncing = true;
-			isEmpty = true; // Mark the block as empty after bouncing
-			bounceStartTime = GetTickCount();
-			startY = y; // Store the starting Y position for bouncing
-			if (itemType == 0)
-			{
-				//Tạo coin nảy
-				CCoin* coin = new CCoin(this->x, this->y, 1);
-				CScene* currentScene = CGame::GetInstance()->GetCurrentScene();
-				CPlayScene* playscene = dynamic_cast<CPlayScene*>(currentScene);
-
-				if (playscene)
-				{
-					coin->SetState(COIN_STATE_JUMP);
-					playscene->AddObject(coin);
-				
-				}
-				
-				
-			}
-			else if (itemType == 1)
-			{
-				//Tạo nấm nảy
-				CMushroom* mushroom = new CMushroom(this->x, this->y);
-				CPlayScene* scene = dynamic_cast<CPlayScene*>(CGame::GetInstance()->GetCurrentScene());
-				if (scene)
-				{
-					mushroom->SetState(MUSHROOM_STATE_IDLE);
-					scene->AddObject(mushroom);
-				}
-			}
+			TriggerQuestionBlock();
+			
+		
 		}
+	CMario* mario = dynamic_cast<CMario*>(e->obj);
+		if (mario != NULL && !isBouncing && !isEmpty && e->ny > 0)
+		{
+			TriggerQuestionBlock();
+		
+		}
+	 
+
 	
 }
 void CQuestionBlock::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)

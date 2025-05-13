@@ -85,6 +85,53 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 
 }
 
+void CMario::OnCollisionWithKoopa(LPCOLLISIONEVENT e)
+{
+	CKoopa* koopa = dynamic_cast<CKoopa*>(e->obj);
+	if (e->ny < 0)
+	{
+		if (koopa->GetState() == KOOPA_STATE_WALKING)
+		{
+			koopa->SetState(KOOPA_STATE_SHELL_IDLE);
+			vy = -MARIO_JUMP_DEFLECT_SPEED;
+		}
+		else if(koopa->GetState() == KOOPA_STATE_SHELL_IDLE)
+		{
+			koopa->GetMarioX(x);
+			koopa->SetState(KOOPA_STATE_SHELL_MOVING);
+			
+		}
+	}
+	else if (koopa->GetState() == KOOPA_STATE_SHELL_IDLE)
+	{
+		if (e->ny == 0)
+		{
+			koopa->GetMarioX(x);
+			koopa->SetState(KOOPA_STATE_SHELL_MOVING);
+			
+		}
+	}
+	else if(koopa->GetTakeDamgeFromKoopa())
+	{
+		if (untouchable == 0 || isStunned)
+		{
+			if (koopa->GetState() != KOOPA_STATE_DIE)
+			{
+				if (level > MARIO_LEVEL_SMALL)
+				{
+					level = MARIO_LEVEL_SMALL;
+					StartUntouchable();
+					StartStunned();
+				}
+				else
+				{
+					DebugOut(L">>> Mario DIE >>> \n");
+					SetState(MARIO_STATE_DIE);
+				}
+			}
+		}
+	}
+}
 
 void CMario::OnCollisionWithPiranhaBullet(LPCOLLISIONEVENT e)
 {
@@ -150,7 +197,7 @@ void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 			vy = -MARIO_JUMP_DEFLECT_SPEED;
 		}
 	}
-	else // hit by Goomba
+	else 
 	{
 		if (untouchable == 0 || isStunned)
 		{
@@ -192,7 +239,7 @@ void CMario::OnCollisionWithMushroom(LPCOLLISIONEVENT e)
 void CMario::OnClollisionWithQuestionBlock(LPCOLLISIONEVENT e)
 {
 	CQuestionBlock* qblock = dynamic_cast<CQuestionBlock*>(e->obj);
-	qblock->OnCollisionWithMario(e);
+	if(qblock->GetItemType() == 1)
 	coin++;
 
 }

@@ -26,28 +26,64 @@ void CKoopa::OnNoCollision(DWORD dt)
 
 void CKoopa::OnCollisionWith(LPCOLLISIONEVENT e)
 {
-	if (!e->obj->IsBlocking()) return;
-	if (dynamic_cast<CKoopa*>(e->obj))
+	if(!e->obj->IsBlocking())
 	{
-		CKoopa* koopa = dynamic_cast<CKoopa*>(e->obj);
-		if (koopa->GetState() != KOOPA_STATE_SHELL_MOVING)
-		{
-			return;
-		}
-		else
-		{
-			koopa->SetState(KOOPA_STATE_DIE);
-		}
+		OnCollisionWithOtherKoopa(e);
+		OnCollisionWithGoomba(e);
+		return;
 	}
-
 	if (e->ny != 0)
 	{
 		vy = 0;
 	}
-	else if (e->nx != 0)
+	else if (e->nx != 0 )
 	{
 		vx = -vx;
 	}
+
+	
+
+}
+
+void CKoopa::OnCollisionWithOtherKoopa(LPCOLLISIONEVENT e)
+{
+	CKoopa* koopa = dynamic_cast<CKoopa*>(e->obj);
+	if (koopa == nullptr || koopa == this) return;
+	if (state == KOOPA_STATE_SHELL_MOVING)
+	{
+		if (koopa->GetState() != KOOPA_STATE_SHELL_MOVING)
+		{
+			koopa->SetState(KOOPA_STATE_DIE);
+			
+		}
+		else
+		{
+			SetState(KOOPA_STATE_DIE);
+			
+		}
+	}
+	else if (koopa->GetState() == KOOPA_STATE_SHELL_MOVING)
+	{
+		SetState(KOOPA_STATE_DIE);
+		
+	}
+
+		
+}
+void CKoopa::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
+{
+	CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
+	if (goomba == nullptr) return;
+	if (state == KOOPA_STATE_SHELL_MOVING)
+	{
+		if (goomba->GetState() != GOOMBA_STATE_DIE)
+		{
+			goomba->SetState(GOOMBA_STATE_DIE);
+		}
+		
+	}
+	
+
 }
 
 void CKoopa::SetState(int state)
@@ -59,18 +95,22 @@ void CKoopa::SetState(int state)
 	case KOOPA_STATE_WALKING:
 		vx = -KOOPA_WALKING_SPEED;
 		isShell = false;
+		takeDamge = true;
 		break;
 	case KOOPA_STATE_SHELL_IDLE:
 		vx = 0;
 		isShell = true;
+		takeDamge = false;
 		state_start = GetTickCount64();
 		break;
 	case KOOPA_STATE_SHELL_MOVING:
+		state_start = GetTickCount64();
 		if (marioX > x)
-			vx = KOOPA_WALKING_SPEED;
+			vx = -KOOPA_SHELL_MOVING_SPEED;
 		else
-			vx = -KOOPA_WALKING_SPEED;
+			vx = KOOPA_SHELL_MOVING_SPEED;
 		isShell = true;
+		takeDamge = false;
 		break;
 	case KOOPA_STATE_SHELL_EXIT:
 		vx = 0;
@@ -101,9 +141,14 @@ void CKoopa::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		SetState(KOOPA_STATE_SHELL_EXIT);
 	}
 
+
 	if (state == KOOPA_STATE_SHELL_EXIT && GetTickCount64() - state_start > KOOPA_SHELL_EXIT_TIMEOUT)
 	{
 		SetState(KOOPA_STATE_WALKING);
+	}
+	if (state == KOOPA_STATE_SHELL_MOVING && GetTickCount64() - state_start > KOOPA_SHELL_PREDAMGE_TIMEOUT)
+	{
+		takeDamge = true;
 	}
 
 	CGameObject::Update(dt, coObjects);
@@ -120,6 +165,9 @@ void CKoopa::Render()
 		break;
 	case KOOPA_STATE_SHELL_IDLE:
 		aniId = KOOPA_ANI_SHELL_IDLE;
+		break;
+	case KOOPA_STATE_SHELL_MOVING:
+		aniId = KOOPA_ANI_SHELL_MOVING;
 		break;
 	default:
 		break;

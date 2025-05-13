@@ -1,7 +1,9 @@
 #include "GameObject.h"
-
-#include "Animation.h"
-#include "Animations.h"
+#include "PlayScene.h"
+#include "Coin.h"
+#include "Mushroom.h"
+#include "Koopa.h"
+#include "Mario.h"
 
 #include "debug.h"
 #define ID_ANI_QUESTION_BLOCK 86000
@@ -32,5 +34,8 @@ public:
 	void GetBoundingBox(float& l, float& t, float& r, float& b);
 	void SetItemType(int type) { itemType = type; }
 	int GetItemType() { return itemType; }
-	void OnCollisionWithMario(LPCOLLISIONEVENT e);
+	void OnCollisionWith(LPCOLLISIONEVENT e);
+	void TriggerQuestionBlock();
+	virtual int IsBlocking() { return 1; }
+	virtual int IsCollidable() { return 1; }
 };
