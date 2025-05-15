@@ -6,6 +6,15 @@
 
 #include "debug.h"
 
+#include "Goomba.h"
+#include "Coin.h"
+#include "Portal.h"
+#include "QuestionBlock.h"
+#include "Mushroom.h"
+#include "Piranha.h"
+#include "PiranhaBullet.h"
+#include "Koopa.h"
+
 #define MARIO_WALKING_SPEED		0.1f
 #define MARIO_RUNNING_SPEED		0.2f
 
@@ -57,6 +66,15 @@
 #define ID_ANI_MARIO_BRACE_RIGHT 1000
 #define ID_ANI_MARIO_BRACE_LEFT 1001
 
+#define ID_ANI_MARIO_HOLD_KOOPA_LEFT 1180
+#define ID_ANI_MARIO_HOLD_KOOPA_RIGHT 1181
+
+#define ID_ANI_MARIO_HOLD_KOOPA_LEFT_IDLE 1182
+#define ID_ANI_MARIO_HOLD_KOOPA_RIGHT_IDLE 1183
+
+#define ID_ANI_MARIO_KICK_KOOPA_LEFT 1184
+#define ID_ANI_MARIO_KICK_KOOPA_RIGHT 1185
+
 #define ID_ANI_MARIO_DIE 999
 
 // SMALL MARIO
@@ -77,6 +95,13 @@
 
 #define ID_ANI_MARIO_SMALL_JUMP_RUN_RIGHT 1600
 #define ID_ANI_MARIO_SMALL_JUMP_RUN_LEFT 1601
+
+#define ID_ANI_MARIO_SMALL_HOLD_KOOPA_LEFT 1700
+#define ID_ANI_MARIO_SMALL_HOLD_KOOPA_RIGHT 1701
+#define ID_ANI_MARIO_SMALL_HOLD_KOOPA_LEFT_IDLE 1702
+#define ID_ANI_MARIO_SMALL_HOLD_KOOPA_RIGHT_IDLE 1703
+#define ID_ANI_MARIO_SMALL_KICK_KOOPA_LEFT 1704
+#define ID_ANI_MARIO_SMALL_KICK_KOOPA_RIGHT 1705
 
 #pragma endregion
 
@@ -101,6 +126,7 @@
 
 #define MARIO_UNTOUCHABLE_TIME 2500
 #define MARIO_STUNNED_TIME 1000
+#define MARIO_KICK_TIME 200
 
 class CMario : public CGameObject
 {
@@ -116,11 +142,15 @@ class CMario : public CGameObject
 	BOOLEAN isOnPlatform;
 	int coin; 
 	bool isStunned = false;
+	CKoopa* heldKoopa = NULL;
+	bool isHolding = false;
+	bool isKickingKoopa = false;
+
 
 	void OnCollisionWithGoomba(LPCOLLISIONEVENT e);
 	void OnCollisionWithCoin(LPCOLLISIONEVENT e);
 	void OnCollisionWithPortal(LPCOLLISIONEVENT e);
-	void OnClollisionWithQuestionBlock(LPCOLLISIONEVENT e);
+	void OnCollisionWithQuestionBlock(LPCOLLISIONEVENT e);
 	void OnCollisionWithMushroom(LPCOLLISIONEVENT e);
 	void OnCollisionWithPiranha(LPCOLLISIONEVENT e);
 	void OnCollisionWithPiranhaBullet(LPCOLLISIONEVENT e);
@@ -160,6 +190,6 @@ public:
 	void SetLevel(int l);
 	void StartUntouchable() { untouchable = 1; untouchable_start = GetTickCount64(); }
 	void StartStunned() { if(!isStunned) isStunned = true; stunned_start = GetTickCount64(); }
-
+	void ReleaseKoopa();
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 };

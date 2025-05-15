@@ -1,5 +1,7 @@
 ﻿#include "Koopa.h"
 #include"debug.h"
+#include "Textures.h"
+#include "Game.h"
 
 void CKoopa::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
@@ -12,7 +14,7 @@ void CKoopa::GetBoundingBox(float& left, float& top, float& right, float& bottom
 	}
 	else
 	{
-		DebugOut(L"[Koopa] GetBoundingBox state = %d\n", state);
+		
 		left = x - KOOPA_BBOX_WIDTH / 2;
 		top = y - KOOPA_BBOX_HEIGHT / 2;
 		right = left + KOOPA_BBOX_WIDTH;
@@ -24,6 +26,7 @@ void CKoopa::OnNoCollision(DWORD dt)
 {
 	x += vx * dt;
 	y += vy * dt;
+	isOnPlatform = false;
 }
 
 void CKoopa::OnCollisionWith(LPCOLLISIONEVENT e)
@@ -37,10 +40,15 @@ void CKoopa::OnCollisionWith(LPCOLLISIONEVENT e)
 	if (e->ny != 0)
 	{
 		vy = 0;
+		if (e->ny < 0)
+		{
+			isOnPlatform = true;
+		}
 	}
 	else if (e->nx != 0 )
 	{
 		vx = -vx;
+
 	}
 
 	
@@ -163,6 +171,7 @@ void CKoopa::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 void CKoopa::Render()
 {
+	RenderBoundingBox();
 	int aniId;
 	switch (state)
 	{
@@ -185,4 +194,26 @@ void CKoopa::Render()
 		break;
 	}
 	CAnimations::GetInstance()->Get(aniId)->Render(x, y);
+}
+void CKoopa::RenderBoundingBox()
+{
+	D3DXVECTOR3 p(x, y, 0);
+	RECT rect;
+
+	LPTEXTURE bbox = CTextures::GetInstance()->Get(ID_TEX_BBOX);
+
+	float l, t, r, b;
+
+	GetBoundingBox(l, t, r, b);
+	rect.left = 0;
+	rect.top = 0;
+	rect.right = (int)r - (int)l;
+	rect.bottom = (int)b - (int)t;
+
+	float cx, cy;
+	CGame::GetInstance()->GetCamPos(cx, cy);
+
+	/*float yy = y - this->cellHeight / 2 + rect.bottom / 2;*/
+
+	CGame::GetInstance()->Draw(x - cx, y - cy, bbox, nullptr, BBOX_ALPHA, rect.right - 1, rect.bottom - 1);
 }

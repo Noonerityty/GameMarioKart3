@@ -1,3 +1,4 @@
+#pragma once
 #include "Goomba.h"
 
 #define PARAGOOMBA_JUMP_TIME 300

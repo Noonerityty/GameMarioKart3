@@ -3,7 +3,7 @@
 #include "Goomba.h"
 
 #define KOOPA_WALKING_SPEED 0.05f
-#define KOOPA_SHELL_MOVING_SPEED 0.13f
+#define KOOPA_SHELL_MOVING_SPEED 0.15f
 #define KOOPA_GRAVITY 0.002f
 
 #define KOOPA_BBOX_WIDTH 15
@@ -38,11 +38,12 @@ protected:
 	float ax;
 	float ay;
 	bool isShell;
+	bool isOnPlatform;
 	bool takeDamge;
 	ULONGLONG state_start;
 	float marioX;
-	void OnCollisionWithOtherKoopa(LPCOLLISIONEVENT e);
-	void OnCollisionWithGoomba(LPCOLLISIONEVENT e);
+	virtual void OnCollisionWithOtherKoopa(LPCOLLISIONEVENT e);
+	virtual void OnCollisionWithGoomba(LPCOLLISIONEVENT e);
 public:
 	CKoopa(float x, float y) : CGameObject(x, y)
 	{
@@ -52,14 +53,15 @@ public:
 		isShell = false;
 		SetState(KOOPA_STATE_WALKING);
 	}
-	void Render();
-	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
-	void GetBoundingBox(float& l, float& t, float& r, float& b);
-	void SetState(int state);
-	void OnNoCollision(DWORD dt);
-	void OnCollisionWith(LPCOLLISIONEVENT e);
-	void GetMarioX(float marioX) { this->marioX = marioX; }
-	bool GetTakeDamgeFromKoopa() { return takeDamge; }
+	virtual void Render();
+	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
+	virtual	void GetBoundingBox(float& l, float& t, float& r, float& b);
+	virtual	void RenderBoundingBox();
+	virtual	void SetState(int state);
+	virtual	void OnNoCollision(DWORD dt);
+	virtual	void OnCollisionWith(LPCOLLISIONEVENT e);
+	virtual	void GetMarioX(float marioX) { this->marioX = marioX; }
+	virtual	bool GetTakeDamgeFromKoopa() { return takeDamge; }
 	virtual int IsCollidable() { return 1; }
 	virtual int IsBlocking() { return 0; }
 };

@@ -4,14 +4,7 @@
 #include "Mario.h"
 #include "Game.h"
 
-#include "Goomba.h"
-#include "Coin.h"
-#include "Portal.h"
-#include "QuestionBlock.h"
-#include "Mushroom.h"
-#include "Piranha.h"
-#include "PiranhaBullet.h"
-#include "Koopa.h"
+
 
 #include "Collision.h"
 
@@ -29,6 +22,34 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		CGameObject::Update(dt, coObjects);
 		return;
 
+	}
+	if (isKickingKoopa)
+	{
+		ULONGLONG timer = GetTickCount64();
+		if (GetTickCount64() - timer > MARIO_KICK_TIME)
+		{
+			isKickingKoopa = false;
+		}
+	}
+	if (heldKoopa != NULL && isHolding)
+	{
+		float offsetX = 0;
+		float offsetY = 0;
+
+		offsetX = (nx > 0) ? 8.0f : -8.0f;
+		if (level == MARIO_LEVEL_BIG)
+		{
+			offsetY = 4.0f;
+		}
+		else
+		{
+			offsetY = -2.0f;
+
+		}
+		float koopaX = x + offsetX;
+		float koopaY = y + offsetY;
+
+		heldKoopa->SetPosition(koopaX, koopaY);
 	}
 	vy += ay * dt;
 	vx += ax * dt;
@@ -72,7 +93,7 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 	else if (dynamic_cast<CPortal*>(e->obj))
 		OnCollisionWithPortal(e);
 	else if (dynamic_cast<CQuestionBlock*>(e->obj))
-		OnClollisionWithQuestionBlock(e);
+		OnCollisionWithQuestionBlock(e);
 	else if (dynamic_cast<CMushroom*>(e->obj))
 		OnCollisionWithMushroom(e);
 	else if (dynamic_cast<CPiranha*>(e->obj))
@@ -95,23 +116,40 @@ void CMario::OnCollisionWithKoopa(LPCOLLISIONEVENT e)
 			koopa->SetState(KOOPA_STATE_SHELL_IDLE);
 			vy = -MARIO_JUMP_DEFLECT_SPEED;
 		}
-		else if(koopa->GetState() == KOOPA_STATE_SHELL_IDLE)
+		else if(koopa->GetState() == KOOPA_STATE_SHELL_IDLE && isHolding == false)
 		{
 			koopa->GetMarioX(x);
 			koopa->SetState(KOOPA_STATE_SHELL_MOVING);
+			vy = -MARIO_JUMP_DEFLECT_SPEED;
 			
 		}
 		else if (koopa->GetState() == KOOPA_STATE_SHELL_MOVING)
 		{
 			koopa->SetState(KOOPA_STATE_SHELL_IDLE);
+			vy = -MARIO_JUMP_DEFLECT_SPEED;
 		}
 	}
 	else if (koopa->GetState() == KOOPA_STATE_SHELL_IDLE)
 	{
 		if (e->ny == 0)
 		{
-			koopa->GetMarioX(x);
-			koopa->SetState(KOOPA_STATE_SHELL_MOVING);
+			if (CGame::GetInstance()->IsKeyDown(DIK_A) && isSitting == false)
+			{
+				heldKoopa = koopa;
+				isHolding = true;
+				
+			
+
+				
+			}
+			else if(isHolding == false)
+			{
+				koopa->GetMarioX(x);
+				isKickingKoopa = true;
+				koopa->SetState(KOOPA_STATE_SHELL_MOVING);
+
+			}
+
 			
 		}
 	}
@@ -137,6 +175,16 @@ void CMario::OnCollisionWithKoopa(LPCOLLISIONEVENT e)
 	}
 }
 
+void CMario::ReleaseKoopa()
+{
+	if (heldKoopa && isHolding)
+	{
+		heldKoopa->SetState(KOOPA_STATE_SHELL_MOVING);
+		heldKoopa = NULL;
+		isHolding = false;
+		isKickingKoopa = true;
+	}
+}
 void CMario::OnCollisionWithPiranhaBullet(LPCOLLISIONEVENT e)
 {
 	CPiranhaBullet* piranhaBullet = dynamic_cast<CPiranhaBullet*>(e->obj);
@@ -240,9 +288,14 @@ void CMario::OnCollisionWithMushroom(LPCOLLISIONEVENT e)
 		}
 	}
 }
-void CMario::OnClollisionWithQuestionBlock(LPCOLLISIONEVENT e)
+void CMario::OnCollisionWithQuestionBlock(LPCOLLISIONEVENT e)
 {
 	CQuestionBlock* qblock = dynamic_cast<CQuestionBlock*>(e->obj);
+	if (e->ny > 0)
+	{
+		qblock->TriggerQuestionBlock();
+	}
+	DebugOut(L"[INFO] Mario hit question block\n");
 	if(qblock->GetItemType() == 1)
 	coin++;
 
@@ -279,10 +332,49 @@ int CMario::GetAniIdSmall()
 	else
 		if (isSitting)
 		{
+
 			if (nx > 0)
 				aniId = ID_ANI_MARIO_SIT_RIGHT;
 			else
 				aniId = ID_ANI_MARIO_SIT_LEFT;
+		}
+		else if (isHolding)
+		{
+			if (vx == 0)
+			{
+				if (nx > 0)
+					aniId = ID_ANI_MARIO_SMALL_HOLD_KOOPA_RIGHT_IDLE;
+				else
+					aniId = ID_ANI_MARIO_SMALL_HOLD_KOOPA_LEFT_IDLE;
+
+			}
+			else if (vx > 0)
+			{
+					aniId = ID_ANI_MARIO_SMALL_HOLD_KOOPA_RIGHT;
+			}
+			else
+			{
+				aniId = ID_ANI_MARIO_SMALL_HOLD_KOOPA_LEFT;
+			}
+
+			//if (nx > 0)
+			//	aniId = ID_ANI_MARIO_HOLD_KOOPA_RIGHT;
+			//else
+			//	aniId = ID_ANI_MARIO_HOLD_KOOPA_LEFT;
+		}
+		else if (isKickingKoopa)
+		{
+			if (vx > 0)
+			{
+				aniId = ID_ANI_MARIO_SMALL_KICK_KOOPA_RIGHT;
+
+			}
+			else if (vx < 0)
+			{
+				aniId = ID_ANI_MARIO_SMALL_KICK_KOOPA_LEFT;
+			}
+			isKickingKoopa = false;
+			DebugOut(L">>> Mario DIE >>> \n");
 		}
 		else
 			if (vx == 0)
@@ -346,6 +438,41 @@ int CMario::GetAniIdBig()
 			else
 				aniId = ID_ANI_MARIO_SIT_LEFT;
 		}
+		else if (isHolding)
+		{
+			if (vx == 0)
+			{
+				if (nx > 0)
+					aniId = ID_ANI_MARIO_HOLD_KOOPA_RIGHT_IDLE;
+				else
+					aniId = ID_ANI_MARIO_HOLD_KOOPA_LEFT_IDLE;
+
+			}
+			else if (vx > 0)
+			{
+				aniId = ID_ANI_MARIO_HOLD_KOOPA_RIGHT;
+			}
+			else
+			{
+				aniId = ID_ANI_MARIO_HOLD_KOOPA_LEFT;
+			}
+
+		}
+		else if (isKickingKoopa)
+		{
+			if (vx > 0)
+			{
+				aniId = ID_ANI_MARIO_KICK_KOOPA_RIGHT;
+
+			}
+			else if (vx < 0)
+			{
+				aniId = ID_ANI_MARIO_KICK_KOOPA_LEFT;
+			}
+			isKickingKoopa = false;
+			
+		}
+		
 		else
 			if (vx == 0)
 			{

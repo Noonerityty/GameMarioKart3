@@ -17,6 +17,7 @@
 #include "Piranha.h"
 #include "ParaGoomba.h"
 #include "Koopa.h"
+#include "RedKoopa.h"
 
 #include "SampleKeyEventHandler.h"
 
@@ -137,6 +138,8 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	}
 	case OBJECT_TYPE_KOOPA:
 		obj = new CKoopa(x, y); enemies.push_back(obj); break;
+	case OBJECT_TYPE_RED_KOOPA:
+		obj = new CRedKoopa(x, y); enemies.push_back(obj); break;
 	case OBJECT_TYPE_BRICK: obj = new CBrick(x, y); blocks.push_back(obj);	break;
 	case OBJECT_TYPE_COIN:
 	{ 

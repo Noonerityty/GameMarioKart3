@@ -1,8 +1,13 @@
 ﻿#include "QuestionBlock.h"
-
+#include "Coin.h"
+#include "Mushroom.h"
+#include "Koopa.h"
+#include "Mario.h"
+#include "debug.h"
 
 void CQuestionBlock::TriggerQuestionBlock()
 {
+	if (isBouncing || isEmpty) return; // Prevent triggering if already bouncing or empty
 	isBouncing = true;
 	isEmpty = true; // Mark the block as empty after bouncing
 	bounceStartTime = GetTickCount64();
@@ -40,20 +45,10 @@ void CQuestionBlock::OnCollisionWith(LPCOLLISIONEVENT e)
 {
 	
 	CKoopa* koopa = dynamic_cast<CKoopa*>(e->obj);
-		if (koopa != NULL && koopa->GetState() == KOOPA_STATE_SHELL_MOVING && e->nx != 0 && !isBouncing && !isEmpty)
+		if (koopa != NULL && koopa->GetState() == KOOPA_STATE_SHELL_MOVING && e->nx != 0)
 		{
 			TriggerQuestionBlock();
-			
-		
 		}
-	CMario* mario = dynamic_cast<CMario*>(e->obj);
-		if (mario != NULL && !isBouncing && !isEmpty && e->ny > 0)
-		{
-			TriggerQuestionBlock();
-		
-		}
-	 
-
 	
 }
 void CQuestionBlock::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)

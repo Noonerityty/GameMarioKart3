@@ -1,3 +1,4 @@
+#pragma once
 #include "GameObject.h"
 
 #define	PIRANHA_SPEED	0.03f

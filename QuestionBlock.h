@@ -1,9 +1,7 @@
+#pragma once
 #include "GameObject.h"
 #include "PlayScene.h"
-#include "Coin.h"
-#include "Mushroom.h"
-#include "Koopa.h"
-#include "Mario.h"
+
 
 #include "debug.h"
 #define ID_ANI_QUESTION_BLOCK 86000
