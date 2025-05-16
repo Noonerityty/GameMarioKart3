@@ -19,7 +19,7 @@ void CVerticalPlatform::Render()
 	}
 	if (length > 1)
 		s->Get(this->spriteIdEnd)->Draw(x, yy);
-	RenderBoundingBox();
+	/*RenderBoundingBox();*/
 
 }
 void CVerticalPlatform::GetBoundingBox(float& l, float& t, float& r, float& b)

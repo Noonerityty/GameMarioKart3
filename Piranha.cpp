@@ -187,7 +187,7 @@ void CPiranha::SetState(int state)
 }
 void CPiranha::Render()
 {
-	RenderBoudingBox();
+	/*RenderBoudingBox();*/
 	switch(state)
 	{
 		case PIRANHA_STATE_HIDDEN:
@@ -294,25 +294,25 @@ void CPiranha::GetBoundingBox(float& l, float& t, float& r, float& b)
 	b = t + PIRANHA_BBOX_HEIGHT;
 }
 
-void CPiranha::RenderBoudingBox()
-{
-	D3DXVECTOR3 p(x, y, 0);
-	RECT rect;
-
-	LPTEXTURE bbox = CTextures::GetInstance()->Get(ID_TEX_BBOX);
-
-	float l, t, r, b;
-
-	GetBoundingBox(l, t, r, b);
-	rect.left = 0;
-	rect.top = 0;
-	rect.right = (int)r - (int)l;
-	rect.bottom = (int)b - (int)t;
-
-	float cx, cy;
-	CGame::GetInstance()->GetCamPos(cx, cy);
-
-	/*float yy = y - this->cellHeight / 2 + rect.bottom / 2;*/
-
-	CGame::GetInstance()->Draw(x - cx, y - cy, bbox, nullptr, BBOX_ALPHA, rect.right - 1, rect.bottom - 1);
-}
+//void CPiranha::RenderBoudingBox()
+//{
+//	D3DXVECTOR3 p(x, y, 0);
+//	RECT rect;
+//
+//	LPTEXTURE bbox = CTextures::GetInstance()->Get(ID_TEX_BBOX);
+//
+//	float l, t, r, b;
+//
+//	GetBoundingBox(l, t, r, b);
+//	rect.left = 0;
+//	rect.top = 0;
+//	rect.right = (int)r - (int)l;
+//	rect.bottom = (int)b - (int)t;
+//
+//	float cx, cy;
+//	CGame::GetInstance()->GetCamPos(cx, cy);
+//
+//	/*float yy = y - this->cellHeight / 2 + rect.bottom / 2;*/
+//
+//	CGame::GetInstance()->Draw(x - cx, y - cy, bbox, nullptr, BBOX_ALPHA, rect.right - 1, rect.bottom - 1);
+//}

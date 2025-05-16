@@ -56,7 +56,7 @@ public:
 	void Render();
 	void SetState(int state);
 	void GetBoundingBox(float& l, float& t, float& r, float& b);
-	void RenderBoudingBox();
+	/*void RenderBoudingBox();*/
 	virtual int IsBlocking() { return 0; }
 	virtual int IsCollidable() { return 1; }
 	
