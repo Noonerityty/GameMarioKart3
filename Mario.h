@@ -14,6 +14,8 @@
 #include "Piranha.h"
 #include "PiranhaBullet.h"
 #include "Koopa.h"
+#include "Leaf.h"
+
 
 #define MARIO_WALKING_SPEED		0.1f
 #define MARIO_RUNNING_SPEED		0.2f
@@ -103,6 +105,37 @@
 #define ID_ANI_MARIO_SMALL_KICK_KOOPA_LEFT 1704
 #define ID_ANI_MARIO_SMALL_KICK_KOOPA_RIGHT 1705
 
+//RACOON MARIO
+#define ID_ANI_MARIO_RACOON_IDLE_RIGHT 1800
+#define ID_ANI_MARIO_RACOON_IDLE_LEFT 1801
+
+#define ID_ANI_MARIO_RACOON_WALKING_RIGHT 1805
+#define ID_ANI_MARIO_RACOON_WALKING_LEFT 1806
+
+#define ID_ANI_MARIO_RACOON_RUNNING_RIGHT 1810
+#define ID_ANI_MARIO_RACOON_RUNNING_LEFT 1811
+
+#define ID_ANI_MARIO_RACOON_BRACE_RIGHT 1815
+#define ID_ANI_MARIO_RACOON_BRACE_LEFT 1816
+
+#define ID_ANI_MARIO_RACOON_JUMP_WALK_RIGHT 1820
+#define ID_ANI_MARIO_RACOON_JUMP_WALK_LEFT 1821
+
+#define ID_ANI_MARIO_RACOON_JUMP_RUN_RIGHT 1825
+#define ID_ANI_MARIO_RACOON_JUMP_RUN_LEFT 1826
+
+#define ID_ANI_MARIO_RACOON_HOLD_KOOPA_RIGHT 1830
+#define ID_ANI_MARIO_RACOON_HOLD_KOOPA_LEFT 1831
+
+#define ID_ANI_MARIO_RACOON_HOLD_KOOPA_RIGHT_IDLE 1832
+#define ID_ANI_MARIO_RACOON_HOLD_KOOPA_LEFT_IDLE 1833
+
+#define ID_ANI_MARIO_RACOON_KICK_KOOPA_RIGHT 1834
+#define ID_ANI_MARIO_RACOON_KICK_KOOPA_LEFT 1835
+
+#define ID_ANI_MARIO_RACOON_SIT_RIGHT 1836
+#define ID_ANI_MARIO_RACOON_SIT_LEFT 1837
+
 #pragma endregion
 
 #define GROUND_Y 160.0f
@@ -112,9 +145,10 @@
 
 #define	MARIO_LEVEL_SMALL	1
 #define	MARIO_LEVEL_BIG		2
+#define MARIO_LEVEL_RACOON	3
 
-#define MARIO_BIG_BBOX_WIDTH  14
-#define MARIO_BIG_BBOX_HEIGHT 24
+#define MARIO_BIG_BBOX_WIDTH  14 // 14
+#define MARIO_BIG_BBOX_HEIGHT 24 //24
 #define MARIO_BIG_SITTING_BBOX_WIDTH  14
 #define MARIO_BIG_SITTING_BBOX_HEIGHT 16
 
@@ -139,6 +173,7 @@ class CMario : public CGameObject
 	int untouchable; 
 	ULONGLONG untouchable_start;
 	ULONGLONG stunned_start;
+	ULONGLONG kick_time_out;
 	BOOLEAN isOnPlatform;
 	int coin; 
 	bool isStunned = false;
@@ -155,9 +190,11 @@ class CMario : public CGameObject
 	void OnCollisionWithPiranha(LPCOLLISIONEVENT e);
 	void OnCollisionWithPiranhaBullet(LPCOLLISIONEVENT e);
 	void OnCollisionWithKoopa(LPCOLLISIONEVENT e);
+	void OnCollisionWithLeaf(LPCOLLISIONEVENT e);
 
 	int GetAniIdBig();
 	int GetAniIdSmall();
+	int GetAniIdRacoon();
 
 public:
 	CMario(float x, float y) : CGameObject(x, y)
@@ -167,7 +204,7 @@ public:
 		ax = 0.0f;
 		ay = MARIO_GRAVITY; 
 
-		level = MARIO_LEVEL_SMALL;
+		level = 1;
 		untouchable = 0;
 		untouchable_start = -1;
 		isOnPlatform = false;
@@ -192,4 +229,5 @@ public:
 	void StartStunned() { if(!isStunned) isStunned = true; stunned_start = GetTickCount64(); }
 	void ReleaseKoopa();
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
+	void ProcessMarioDie();
 };

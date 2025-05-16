@@ -18,6 +18,7 @@
 #include "ParaGoomba.h"
 #include "Koopa.h"
 #include "RedKoopa.h"
+#include "Leaf.h"
 
 #include "SampleKeyEventHandler.h"
 
@@ -213,6 +214,13 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		obj = new CMushroom(x, y);
 		blocks.push_back(obj);
 		break;
+	}
+	case 15:
+	{
+		obj = new CLeaf(x, y);
+		blocks.push_back(obj);
+		break;
+
 	}
 	case OBJECT_TYPE_PIRANHA:
 	{

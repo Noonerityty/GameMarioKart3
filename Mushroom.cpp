@@ -1,5 +1,6 @@
 ﻿#include "Mushroom.h"
 #include "debug.h"
+#include "Mario.h"
 void CMushroom::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	vx += ax * dt;
@@ -47,7 +48,15 @@ void CMushroom::OnCollisionWith(LPCOLLISIONEVENT e)
 
 	if (!e->obj->IsBlocking()) return; // Ignore collision with blocking objects
 	if (dynamic_cast<CMushroom*>(e->obj)) return; // Ignore collision with other mushrooms
-	
+	if (dynamic_cast<CMario*>(e->obj)) 
+	{
+		if (state != MUSHROOM_STATE_DIE)
+		{
+			CMario* mario = dynamic_cast<CMario*>(e->obj);
+			mario->SetLevel(MARIO_LEVEL_BIG);
+			SetState(MUSHROOM_STATE_DIE); // Set mushroom to die state
+		}
+	}
 	if (e->ny != 0)
 	{
 		//vy = 0; // Stop falling

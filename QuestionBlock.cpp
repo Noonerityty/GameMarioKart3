@@ -4,6 +4,7 @@
 #include "Koopa.h"
 #include "Mario.h"
 #include "debug.h"
+#include "Leaf.h"
 
 void CQuestionBlock::TriggerQuestionBlock()
 {
@@ -12,12 +13,13 @@ void CQuestionBlock::TriggerQuestionBlock()
 	isEmpty = true; // Mark the block as empty after bouncing
 	bounceStartTime = GetTickCount64();
 	startY = y; // Store the starting Y position for bouncing
+	CScene* currentScene = CGame::GetInstance()->GetCurrentScene();
+	CPlayScene* playscene = dynamic_cast<CPlayScene*>(currentScene);
 	if (itemType == 0)
 	{
 		//Tạo coin nảy
 		CCoin* coin = new CCoin(this->x, this->y, 1);
-		CScene* currentScene = CGame::GetInstance()->GetCurrentScene();
-		CPlayScene* playscene = dynamic_cast<CPlayScene*>(currentScene);
+
 
 		if (playscene)
 		{
@@ -32,11 +34,20 @@ void CQuestionBlock::TriggerQuestionBlock()
 	{
 		//Tạo nấm nảy
 		CMushroom* mushroom = new CMushroom(this->x, this->y);
-		CPlayScene* scene = dynamic_cast<CPlayScene*>(CGame::GetInstance()->GetCurrentScene());
-		if (scene)
+		
+		if (playscene)
 		{
 			mushroom->SetState(MUSHROOM_STATE_IDLE);
-			scene->AddObject(mushroom);
+			playscene->AddObject(mushroom);
+		}
+	}
+	else if (itemType == 2)
+	{
+		CLeaf* leaf = new CLeaf(this->x, this->y);
+		if (playscene)
+		{
+			leaf->SetState(LEAF_STATE_RISING);
+			playscene->AddObject(leaf);
 		}
 	}
 }

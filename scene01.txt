@@ -13,6 +13,7 @@ Mushroom.txt
 piranha.txt
 piranhaBullet.txt
 koopa.txt
+Leaf.txt
 
 #
 [OBJECTS]
@@ -23,9 +24,9 @@ koopa.txt
 # MARIO
 0	10	10
 #GOMBA
-14	250	10
-2	60	165
-9	40	165	0
+14	60	10
+
+9	40	165	2
 
 
 
@@ -129,10 +130,10 @@ koopa.txt
 #WATER PIPE
 8	360.5	134	31	15	3	80001	80002	80002
 #QUESTION BLOCK
-9	183	119	0
+9	183	119	2
 9	198	119	1
 #MUSHROOM
-10	215	119
+
 #PIRANHA
 11	360.5	142.5
 

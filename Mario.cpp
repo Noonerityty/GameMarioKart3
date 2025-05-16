@@ -3,6 +3,8 @@
 
 #include "Mario.h"
 #include "Game.h"
+#include "Sprite.h"
+
 
 
 
@@ -19,7 +21,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 			isStunned = false;
 			
 		}
-		CGameObject::Update(dt, coObjects);
+		
 		return;
 
 	}
@@ -37,7 +39,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		float offsetY = 0;
 
 		offsetX = (nx > 0) ? 8.0f : -8.0f;
-		if (level == MARIO_LEVEL_BIG)
+		if (level != MARIO_LEVEL_SMALL)
 		{
 			offsetY = 4.0f;
 		}
@@ -62,6 +64,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		untouchable_start = 0;
 		untouchable = 0;
 	}
+	CGameObject::Update(dt, coObjects);
 
 	CCollision::GetInstance()->Process(this, dt, coObjects);
 }
@@ -71,6 +74,7 @@ void CMario::OnNoCollision(DWORD dt)
 	x += vx * dt;
 	y += vy * dt;
 	isOnPlatform = false;
+	//DebugOut(L"[INFO] Mario on no platform\n");
 }
 
 void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
@@ -79,6 +83,7 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 	{
 		vy = 0;
 		if (e->ny < 0) isOnPlatform = true;
+	/*	DebugOut(L"[INFO] Mario on platform\n");*/
 	}
 	else 
 	if (e->nx != 0 && e->obj->IsBlocking())
@@ -102,9 +107,14 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 		OnCollisionWithPiranhaBullet(e);
 	else if (dynamic_cast<CKoopa*>(e->obj))
 		OnCollisionWithKoopa(e);
+	else if (dynamic_cast<CLeaf*>(e->obj))
+		OnCollisionWithLeaf(e);
+
 
 
 }
+
+
 
 void CMario::OnCollisionWithKoopa(LPCOLLISIONEVENT e)
 {
@@ -159,17 +169,7 @@ void CMario::OnCollisionWithKoopa(LPCOLLISIONEVENT e)
 		{
 			if (koopa->GetState() != KOOPA_STATE_DIE)
 			{
-				if (level > MARIO_LEVEL_SMALL)
-				{
-					level = MARIO_LEVEL_SMALL;
-					StartUntouchable();
-					StartStunned();
-				}
-				else
-				{
-					DebugOut(L">>> Mario DIE >>> \n");
-					SetState(MARIO_STATE_DIE);
-				}
+				ProcessMarioDie();
 			}
 		}
 	}
@@ -192,17 +192,7 @@ void CMario::OnCollisionWithPiranhaBullet(LPCOLLISIONEVENT e)
 	{
 		
 		
-			if (level > MARIO_LEVEL_SMALL)
-			{
-				level = MARIO_LEVEL_SMALL;
-				StartUntouchable();
-				StartStunned();
-			}
-			else
-			{
-				DebugOut(L">>> Mario DIE >>> \n");
-				SetState(MARIO_STATE_DIE);
-			}
+		ProcessMarioDie();
 		
 	}
 }
@@ -220,17 +210,7 @@ void CMario::OnCollisionWithPiranha(LPCOLLISIONEVENT e)
 		{
 			if (piranha->GetState() != PIRANHA_STATE_DIE && piranha->GetState() != PIRANHA_STATE_HIDDEN)
 			{
-				if (level > MARIO_LEVEL_SMALL)
-				{
-					level = MARIO_LEVEL_SMALL;
-					StartUntouchable();
-					StartStunned();
-				}
-				else
-				{
-					DebugOut(L">>> Mario DIE >>> \n");
-					SetState(MARIO_STATE_DIE);
-				}
+				ProcessMarioDie();
 			}
 		}
 	}
@@ -255,16 +235,7 @@ void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 		{
 			if (goomba->GetState() != GOOMBA_STATE_DIE)
 			{
-				if (level > MARIO_LEVEL_SMALL)
-				{
-					level = MARIO_LEVEL_SMALL;
-					StartUntouchable();
-				}
-				else
-				{
-					DebugOut(L">>> Mario DIE >>> \n");
-					SetState(MARIO_STATE_DIE);
-				}
+				ProcessMarioDie();
 			}
 		}
 	}
@@ -288,6 +259,22 @@ void CMario::OnCollisionWithMushroom(LPCOLLISIONEVENT e)
 		}
 	}
 }
+
+void CMario::OnCollisionWithLeaf(LPCOLLISIONEVENT e)
+{
+	//SetLevel(MARIO_LEVEL_RACOON);
+		CLeaf* leaf = dynamic_cast<CLeaf*>(e->obj);
+	if (leaf->GetState() != LEAF_STATE_DIE)
+	{
+		if (level == MARIO_LEVEL_SMALL || level == MARIO_LEVEL_BIG)
+		{
+			SetLevel(MARIO_LEVEL_RACOON);
+			leaf->SetState(LEAF_STATE_DIE);
+			/*StartStunned();*/
+		}
+	}
+}
+
 void CMario::OnCollisionWithQuestionBlock(LPCOLLISIONEVENT e)
 {
 	CQuestionBlock* qblock = dynamic_cast<CQuestionBlock*>(e->obj);
@@ -373,7 +360,7 @@ int CMario::GetAniIdSmall()
 			{
 				aniId = ID_ANI_MARIO_SMALL_KICK_KOOPA_LEFT;
 			}
-			isKickingKoopa = false;
+			
 			DebugOut(L">>> Mario DIE >>> \n");
 		}
 		else
@@ -469,7 +456,7 @@ int CMario::GetAniIdBig()
 			{
 				aniId = ID_ANI_MARIO_KICK_KOOPA_LEFT;
 			}
-			isKickingKoopa = false;
+		
 			
 		}
 		
@@ -503,6 +490,103 @@ int CMario::GetAniIdBig()
 	return aniId;
 }
 
+int CMario::GetAniIdRacoon()
+{
+	int aniId = -1;
+	if (!isOnPlatform)
+	{
+		if (abs(ax) == MARIO_ACCEL_RUN_X)
+		{
+			if (nx >= 0)
+				aniId = ID_ANI_MARIO_RACOON_JUMP_RUN_RIGHT;
+			else
+				aniId = ID_ANI_MARIO_RACOON_JUMP_RUN_LEFT;
+		}
+		else
+		{
+			if (nx >= 0)
+				aniId = ID_ANI_MARIO_RACOON_JUMP_WALK_RIGHT;
+			
+			else
+				aniId = ID_ANI_MARIO_RACOON_JUMP_WALK_LEFT;
+		}
+	}
+	else
+		if (isSitting)
+		{
+			if (nx > 0)
+				aniId = ID_ANI_MARIO_RACOON_SIT_RIGHT;
+			else
+				aniId = ID_ANI_MARIO_RACOON_SIT_LEFT;
+		}
+		else if (isHolding)
+		{
+			if (vx == 0)
+			{
+				if (nx > 0)
+					aniId = ID_ANI_MARIO_RACOON_HOLD_KOOPA_RIGHT_IDLE;
+				else
+					aniId = ID_ANI_MARIO_RACOON_HOLD_KOOPA_LEFT_IDLE;
+
+			}
+			else if (vx > 0)
+			{
+				aniId = ID_ANI_MARIO_RACOON_HOLD_KOOPA_RIGHT;
+			}
+			else
+			{
+				aniId = ID_ANI_MARIO_RACOON_HOLD_KOOPA_LEFT;
+			}
+
+		}
+
+		else if (isKickingKoopa)
+		{
+			if (vx > 0)
+			{
+				aniId = ID_ANI_MARIO_RACOON_KICK_KOOPA_RIGHT;
+
+			}
+			else if (vx < 0)
+			{
+				aniId = ID_ANI_MARIO_RACOON_KICK_KOOPA_LEFT;
+			}
+			
+		}
+		else
+		{
+			if (vx == 0)
+				if (nx > 0) aniId = ID_ANI_MARIO_RACOON_IDLE_RIGHT;
+				else aniId = ID_ANI_MARIO_RACOON_IDLE_LEFT;
+			else if (vx > 0)
+			{
+				if (ax < 0)
+					aniId = ID_ANI_MARIO_RACOON_BRACE_RIGHT;
+				else if (abs(ax) == MARIO_ACCEL_RUN_X)
+					aniId = ID_ANI_MARIO_RACOON_RUNNING_RIGHT;
+				else
+					aniId = ID_ANI_MARIO_RACOON_WALKING_RIGHT;
+			}
+			else if(vx < 0)
+			{
+				if (ax > 0)
+					aniId = ID_ANI_MARIO_RACOON_BRACE_LEFT;
+				else if (abs(ax) == MARIO_ACCEL_RUN_X)
+					aniId = ID_ANI_MARIO_RACOON_RUNNING_LEFT;
+				else
+					aniId = ID_ANI_MARIO_RACOON_WALKING_LEFT;
+			}
+		}
+
+
+	if (aniId == -1)
+	{
+		aniId =ID_ANI_MARIO_RACOON_IDLE_RIGHT;
+	}
+
+	return aniId;
+}
+
 void CMario::Render()
 {
 	CAnimations* animations = CAnimations::GetInstance();
@@ -510,10 +594,17 @@ void CMario::Render()
 
 	if (state == MARIO_STATE_DIE)
 		aniId = ID_ANI_MARIO_DIE;
-	else if (level == MARIO_LEVEL_BIG)
-		aniId = GetAniIdBig();
-	else if (level == MARIO_LEVEL_SMALL)
-		aniId = GetAniIdSmall();
+	else
+	{
+			 if (level == MARIO_LEVEL_RACOON)
+				aniId = GetAniIdRacoon();
+			else if (level == MARIO_LEVEL_BIG)
+				aniId = GetAniIdBig();
+			else if (level == MARIO_LEVEL_SMALL)
+				aniId = GetAniIdSmall();
+	}
+
+	DebugOut(L"[DEBUG] Render Mario state: %d, level: %d, aniId: %d\n", state, level, aniId);
 
 	animations->Get(aniId)->Render(x, y);
 
@@ -596,6 +687,7 @@ void CMario::SetState(int state)
 		vy = -MARIO_JUMP_DEFLECT_SPEED;
 		vx = 0;
 		ax = 0;
+
 		break;
 	}
 
@@ -621,6 +713,24 @@ void CMario::GetBoundingBox(float &left, float &top, float &right, float &bottom
 			bottom = top + MARIO_BIG_BBOX_HEIGHT;
 		}
 	}
+	else if (level == MARIO_LEVEL_RACOON)
+	{
+		if (isSitting)
+		{
+			left = x - 10;
+			top = y - 8;
+			right = left + 20;
+			bottom = top + 16;
+		}
+		else
+		{
+			left = x - 10;
+			top = y - 12;
+			right = left + 20;
+			bottom = top + 24;
+		}
+
+	}
 	else
 	{
 		left = x - MARIO_SMALL_BBOX_WIDTH/2;
@@ -633,10 +743,28 @@ void CMario::GetBoundingBox(float &left, float &top, float &right, float &bottom
 void CMario::SetLevel(int l)
 {
 	// Adjust position to avoid falling off platform
+	if (state == MARIO_STATE_DIE) return;
 	if (this->level == MARIO_LEVEL_SMALL)
 	{
 		y -= (MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT) / 2;
 	}
 	level = l;
+}
+
+void CMario::ProcessMarioDie()
+{
+	if(level == MARIO_LEVEL_RACOON)
+	{
+		SetLevel(MARIO_LEVEL_BIG);
+	}
+	else if (level == MARIO_LEVEL_BIG)
+	{
+		SetLevel(MARIO_LEVEL_SMALL);
+	}
+	else
+	{
+		SetState(MARIO_STATE_DIE);
+	}
+
 }
 
