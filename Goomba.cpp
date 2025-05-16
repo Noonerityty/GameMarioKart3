@@ -1,5 +1,6 @@
 #include "Goomba.h"
 
+
 CGoomba::CGoomba(float x, float y):CGameObject(x, y)
 {
 	this->ax = 0;
@@ -50,15 +51,37 @@ void CGoomba::OnCollisionWith(LPCOLLISIONEVENT e)
 
 void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 {
-	vy += ay * dt;
-	vx += ax * dt;
-
-	if ( (state==GOOMBA_STATE_DIE) && (GetTickCount64() - die_start > GOOMBA_DIE_TIMEOUT) )
+	CScene* currentScene = CGame::GetInstance()->GetCurrentScene();
+	CPlayScene* playscene = dynamic_cast<CPlayScene*>(currentScene);
+	if (playscene->IsInCameraView(x, y))
 	{
-		isDeleted = true;
+		isActive = true;
+	}
+	else
+	{
+		isActive = false;
 		return;
 	}
 
+	if (isActive)
+	{
+		vy += ay * dt;
+		vx += ax * dt;
+
+		if ((state == GOOMBA_STATE_DIE) && (GetTickCount64() - die_start > GOOMBA_DIE_TIMEOUT))
+		{
+			isDeleted = true;
+			return;
+		}
+
+	}
+	else
+	{
+
+		vx = 0;
+		vy = 0;
+	}
+	
 	CGameObject::Update(dt, coObjects);
 	CCollision::GetInstance()->Process(this, dt, coObjects);
 }

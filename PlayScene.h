@@ -43,6 +43,7 @@ public:
 	void PurgeDeletedObjects();
 	void LayerManagement();
 	void AddObject(LPGAMEOBJECT obj);
+	bool IsInCameraView(float x, float y);
 
 	static bool IsGameObjectDeleted(const LPGAMEOBJECT& o);
 };

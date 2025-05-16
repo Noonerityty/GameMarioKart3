@@ -2,54 +2,76 @@
 
 void CParaGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
-	vy += ay * dt;
-	vx += ax * dt;
-
-	switch (state)
+	CScene* currentScene = CGame::GetInstance()->GetCurrentScene();
+	CPlayScene* playscene = dynamic_cast<CPlayScene*>(currentScene);
+	if (playscene->IsInCameraView(x, y))
 	{
-	case PARAGOOMBA_STATE_WALKING_WING:
-		isWinged = true;
-		if (GetTickCount64() - stateStart > PARAGOOMBA_WALKING_WING_TIME)
-		{
-			SetState(PARAGOOMBA_STATE_JUMPNG);
-		}
-		break;
-	case PARAGOOMBA_STATE_JUMPNG:
-		isWinged = true;
-		if (jumpCount < PARAGOOMBA_SMALL_JUMP_COUNT)
-		{
-			jumpCount++;
-			vy = PARAGOOMBA_SMALL_JUMP_Y;
-			
-		}
-		else
-		{
-			jumpCount = 0;
-			vy = PARAGOOMBA_BIG_JUMP_Y;
-		}
-		SetState(PARAGOOMBA_STATE_WALKING_WING);
-		break;
-	case PARAGOOMBA_STATE_WALKING_NO_WING:
-		isWinged = false;
-		break;
-	case PARAGOOMBA_STATE_DIE:
-		if (isWinged)
-		{
-			isWinged = false;
-			SetState(PARAGOOMBA_STATE_WALKING_NO_WING);
-
-		}
-		else
-		{
-			isWinged = false;
-			if (GetTickCount64() - die_start > PARAGOOMBA_DIE_TIMEOUT)
-			{
-				isDeleted = true;
-				return;
-			}
-		}
-		break;
+		isActive = true;
 	}
+	else
+	{
+		isActive = false;
+		return;
+	}
+	if (isActive)
+	{
+		vy += ay * dt;
+		vx += ax * dt;
+
+		switch (state)
+		{
+		case PARAGOOMBA_STATE_WALKING_WING:
+			isWinged = true;
+			if (GetTickCount64() - stateStart > PARAGOOMBA_WALKING_WING_TIME)
+			{
+				SetState(PARAGOOMBA_STATE_JUMPNG);
+			}
+			break;
+		case PARAGOOMBA_STATE_JUMPNG:
+			isWinged = true;
+			if (jumpCount < PARAGOOMBA_SMALL_JUMP_COUNT)
+			{
+				jumpCount++;
+				vy = PARAGOOMBA_SMALL_JUMP_Y;
+
+			}
+			else
+			{
+				jumpCount = 0;
+				vy = PARAGOOMBA_BIG_JUMP_Y;
+			}
+			SetState(PARAGOOMBA_STATE_WALKING_WING);
+			break;
+		case PARAGOOMBA_STATE_WALKING_NO_WING:
+			isWinged = false;
+
+			break;
+		case PARAGOOMBA_STATE_DIE:
+			if (isWinged)
+			{
+				isWinged = false;
+				SetState(PARAGOOMBA_STATE_WALKING_NO_WING);
+
+			}
+			else
+			{
+				isWinged = false;
+				if (GetTickCount64() - die_start > PARAGOOMBA_DIE_TIMEOUT)
+				{
+					isDeleted = true;
+					return;
+				}
+			}
+			break;
+		}
+	}
+	else
+	{
+		vx = 0;
+		vy = 0;
+	}
+
+	
 
 
 
@@ -140,6 +162,7 @@ void CParaGoomba::SetState(int state)
 		break;
 	case PARAGOOMBA_STATE_WALKING_NO_WING:
 		vx = -GOOMBA_WALKING_SPEED;
+		ay = GOOMBA_GRAVITY;
 		isWinged = false;
 		break;
 	case PARAGOOMBA_STATE_DIE:

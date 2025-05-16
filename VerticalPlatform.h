@@ -1,3 +1,4 @@
+#pragma once
 #include "GameObject.h"
 
 class CVerticalPlatform : public CGameObject

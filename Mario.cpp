@@ -1,3 +1,4 @@
+
 #include <algorithm>
 #include "debug.h"
 
@@ -6,7 +7,14 @@
 #include "Sprite.h"
 
 
-
+#include "Goomba.h"
+#include "Coin.h"
+#include "Portal.h"
+#include "QuestionBlock.h"
+#include "Mushroom.h"
+#include "Piranha.h"
+#include "PiranhaBullet.h"
+#include "Leaf.h"
 
 #include "Collision.h"
 
@@ -27,8 +35,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 	}
 	if (isKickingKoopa)
 	{
-		ULONGLONG timer = GetTickCount64();
-		if (GetTickCount64() - timer > MARIO_KICK_TIME)
+		/*ULONGLONG timer = GetTickCount64();*/
+		if (GetTickCount64() - kick_time_out > MARIO_KICK_TIME && isKickingKoopa == true)
 		{
 			isKickingKoopa = false;
 		}
@@ -183,6 +191,7 @@ void CMario::ReleaseKoopa()
 		heldKoopa = NULL;
 		isHolding = false;
 		isKickingKoopa = true;
+		kick_time_out = GetTickCount64();
 	}
 }
 void CMario::OnCollisionWithPiranhaBullet(LPCOLLISIONEVENT e)
@@ -283,7 +292,7 @@ void CMario::OnCollisionWithQuestionBlock(LPCOLLISIONEVENT e)
 		qblock->TriggerQuestionBlock();
 	}
 	DebugOut(L"[INFO] Mario hit question block\n");
-	if(qblock->GetItemType() == 1)
+	if(qblock->GetItemType() == 0)
 	coin++;
 
 }
@@ -604,7 +613,7 @@ void CMario::Render()
 				aniId = GetAniIdSmall();
 	}
 
-	DebugOut(L"[DEBUG] Render Mario state: %d, level: %d, aniId: %d\n", state, level, aniId);
+	DebugOut(L"[DEBUG] Render Mario state: %d, level: %d, aniId: %d\n", isKickingKoopa	, level, aniId);
 
 	animations->Get(aniId)->Render(x, y);
 
@@ -765,6 +774,7 @@ void CMario::ProcessMarioDie()
 	{
 		SetState(MARIO_STATE_DIE);
 	}
+	StartUntouchable();
 
 }
 

@@ -1,7 +1,9 @@
-﻿#include "Koopa.h"
+﻿
+#include "Koopa.h"
 #include"debug.h"
 #include "Textures.h"
 #include "Game.h"
+#include "Goomba.h"
 
 void CKoopa::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {

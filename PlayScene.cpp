@@ -383,7 +383,7 @@ void CPlayScene::Update(DWORD dt)
 
 	if (cx < 0) cx = 0;
 
-	CGame::GetInstance()->SetCamPos(cx, cy /*cy*/);
+	CGame::GetInstance()->SetCamPos(cx, 0 /*cy*/);
 
 	PurgeDeletedObjects();
 }
@@ -448,4 +448,17 @@ void CPlayScene::PurgeDeletedObjects()
 void CPlayScene::AddObject(LPGAMEOBJECT obj)
 {
 	objects.push_back(obj);
+}
+
+bool CPlayScene::IsInCameraView(float x, float y) {
+	CGame* game = CGame::GetInstance();
+	float cam_x, cam_y;
+	game->GetCamPos(cam_x, cam_y);
+
+	float left = cam_x - 50;
+	float top = cam_y - 50;
+	float right = cam_x + game->GetBackBufferWidth() + 50;
+	float bottom = cam_y + game->GetBackBufferHeight() + 50;
+
+	return (x >= left && x <= right && y >= top && y <= bottom);
 }

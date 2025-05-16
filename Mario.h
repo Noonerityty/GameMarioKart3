@@ -6,15 +6,9 @@
 
 #include "debug.h"
 
-#include "Goomba.h"
-#include "Coin.h"
-#include "Portal.h"
-#include "QuestionBlock.h"
-#include "Mushroom.h"
-#include "Piranha.h"
-#include "PiranhaBullet.h"
+
 #include "Koopa.h"
-#include "Leaf.h"
+
 
 
 #define MARIO_WALKING_SPEED		0.1f
@@ -160,7 +154,7 @@
 
 #define MARIO_UNTOUCHABLE_TIME 2500
 #define MARIO_STUNNED_TIME 1000
-#define MARIO_KICK_TIME 200
+#define MARIO_KICK_TIME 100
 
 class CMario : public CGameObject
 {
