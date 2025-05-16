@@ -1,4 +1,4 @@
-
+﻿
 #include <algorithm>
 #include "debug.h"
 
@@ -60,7 +60,16 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		float koopaY = y + offsetY;
 
 		heldKoopa->SetPosition(koopaX, koopaY);
+		// Kiểm tra nếu Koopa chuyển sang trạng thái WALKING
+		if (heldKoopa->GetState() == KOOPA_STATE_WALKING)
+		{
+			ProcessMarioDie();
+			isHolding = false;
+		
+		}
 	}
+
+
 	vy += ay * dt;
 	vx += ax * dt;
 
@@ -155,9 +164,6 @@ void CMario::OnCollisionWithKoopa(LPCOLLISIONEVENT e)
 			{
 				heldKoopa = koopa;
 				isHolding = true;
-				
-			
-
 				
 			}
 			else if(isHolding == false)
