@@ -19,6 +19,7 @@
 #include "Koopa.h"
 #include "RedKoopa.h"
 #include "Leaf.h"
+#include "ParaKoopa.h"
 
 #include "SampleKeyEventHandler.h"
 
@@ -141,6 +142,8 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		obj = new CKoopa(x, y); enemies.push_back(obj); break;
 	case OBJECT_TYPE_RED_KOOPA:
 		obj = new CRedKoopa(x, y); enemies.push_back(obj); break;
+	case OBJECT_TYPE_PARA_KOOPA:
+		obj = new CParaKoopa(x, y); enemies.push_back(obj); break;
 	case OBJECT_TYPE_BRICK: obj = new CBrick(x, y); blocks.push_back(obj);	break;
 	case OBJECT_TYPE_COIN:
 	{ 
@@ -215,7 +218,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		blocks.push_back(obj);
 		break;
 	}
-	case 15:
+	case OBJECT_TYPE_LEAF:
 	{
 		obj = new CLeaf(x, y);
 		blocks.push_back(obj);

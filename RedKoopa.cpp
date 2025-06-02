@@ -18,6 +18,7 @@ void CRedKoopa::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
         {
             if (dynamic_cast<CSinglePlatform*>(obj) || dynamic_cast<CQuestionBlock*>(obj))
             {
+                /*if(obj->IsBlocking())*/
                 float objLeft, objTop, objRight, objBottom;
                 obj->GetBoundingBox(objLeft, objTop, objRight, objBottom);
 

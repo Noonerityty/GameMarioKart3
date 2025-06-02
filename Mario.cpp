@@ -15,6 +15,7 @@
 #include "Piranha.h"
 #include "PiranhaBullet.h"
 #include "Leaf.h"
+#include "ParaKoopa.h"
 
 #include "Collision.h"
 
@@ -136,12 +137,23 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 void CMario::OnCollisionWithKoopa(LPCOLLISIONEVENT e)
 {
 	CKoopa* koopa = dynamic_cast<CKoopa*>(e->obj);
+	
 	if (e->ny < 0)
 	{
 		if (koopa->GetState() == KOOPA_STATE_WALKING)
 		{
 			koopa->SetState(KOOPA_STATE_SHELL_IDLE);
 			vy = -MARIO_JUMP_DEFLECT_SPEED;
+		}
+		if (koopa->GetState() == KOOPA_STATE_WALKING_WING || koopa->GetState() == KOOPA_STATE_JUMPING)
+		{
+			CParaKoopa* paraKoopa = dynamic_cast<CParaKoopa*>(koopa);
+			if (paraKoopa)
+			{
+				paraKoopa->SetState(KOOPA_STATE_WALKING);
+				vy = -MARIO_JUMP_DEFLECT_SPEED;
+				DebugOut(L"[INFO] Mario hit ParaKoopa with wing. Now walking.\n");
+			}
 		}
 		else if(koopa->GetState() == KOOPA_STATE_SHELL_IDLE && isHolding == false)
 		{
@@ -271,6 +283,7 @@ void CMario::OnCollisionWithMushroom(LPCOLLISIONEVENT e)
 			SetLevel(MARIO_LEVEL_BIG);
 			mushroom->SetState(MUSHROOM_STATE_DIE);
 			StartStunned();
+			StartUntouchable();
 		}
 	}
 }
@@ -286,6 +299,8 @@ void CMario::OnCollisionWithLeaf(LPCOLLISIONEVENT e)
 			SetLevel(MARIO_LEVEL_RACOON);
 			leaf->SetState(LEAF_STATE_DIE);
 			/*StartStunned();*/
+			StartStunned();
+			StartUntouchable();
 		}
 	}
 }
