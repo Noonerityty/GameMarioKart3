@@ -130,6 +130,9 @@
 #define ID_ANI_MARIO_RACOON_SIT_RIGHT 1836
 #define ID_ANI_MARIO_RACOON_SIT_LEFT 1837
 
+#define ID_ANI_MARIO_RACOON_FLYING_RIGHT 1838
+#define ID_ANI_MARIO_RACOON_FLYING_LEFT 1839
+
 #pragma endregion
 
 #define GROUND_Y 160.0f
@@ -155,6 +158,18 @@
 #define MARIO_UNTOUCHABLE_TIME 2500
 #define MARIO_STUNNED_TIME 1000
 #define MARIO_KICK_TIME 100
+#define MARIO_SPAM_FLY_TIME 200
+
+
+#define MARIO_P_METER_MAX 1.0f
+#define MARIO_P_METER_CHARGE_RATE 0.0005f
+#define MARRIO_P_METER_DECREASE_RATE 0.0007f
+
+
+#define MARRIO_FLYING_BOOST -0.25f
+#define MARIO_FLYING_GRAVITY 0.0005f
+#define MARIO_MAX_FLYING_HEIGHT -242
+
 
 class CMario : public CGameObject
 {
@@ -168,13 +183,18 @@ class CMario : public CGameObject
 	ULONGLONG untouchable_start;
 	ULONGLONG stunned_start;
 	ULONGLONG kick_time_out;
+	ULONGLONG lastSpamFly;
 	BOOLEAN isOnPlatform;
 	int coin; 
 	bool isStunned = false;
 	CKoopa* heldKoopa = NULL;
 	bool isHolding = false;
 	bool isKickingKoopa = false;
-
+	bool isFlying;          
+	float p_meter;          
+	bool canFly;            
+	bool jumpPressed;
+	bool jumpPressedLastFrame;
 
 	void OnCollisionWithGoomba(LPCOLLISIONEVENT e);
 	void OnCollisionWithCoin(LPCOLLISIONEVENT e);
@@ -185,7 +205,7 @@ class CMario : public CGameObject
 	void OnCollisionWithPiranhaBullet(LPCOLLISIONEVENT e);
 	void OnCollisionWithKoopa(LPCOLLISIONEVENT e);
 	void OnCollisionWithLeaf(LPCOLLISIONEVENT e);
-
+	
 	int GetAniIdBig();
 	int GetAniIdSmall();
 	int GetAniIdRacoon();
@@ -197,12 +217,14 @@ public:
 		maxVx = 0.0f;
 		ax = 0.0f;
 		ay = MARIO_GRAVITY; 
-
-		level = 1;
+		lastSpamFly = 0;
+		canFly = false;
+		level = 3;
 		untouchable = 0;
 		untouchable_start = -1;
 		isOnPlatform = false;
 		coin = 0;
+          
 	}
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void Render();
@@ -217,11 +239,12 @@ public:
 
 	void OnNoCollision(DWORD dt);
 	void OnCollisionWith(LPCOLLISIONEVENT e);
-
+	void SetJumpInput(bool pressed) { jumpPressed = pressed; }
 	void SetLevel(int l);
 	void StartUntouchable() { untouchable = 1; untouchable_start = GetTickCount64(); }
 	void StartStunned() { if(!isStunned) isStunned = true; stunned_start = GetTickCount64(); }
 	void ReleaseKoopa();
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 	void ProcessMarioDie();
+	
 };

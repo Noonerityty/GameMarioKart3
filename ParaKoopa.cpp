@@ -172,6 +172,5 @@ void CParaKoopa::GetBoundingBox(float& left, float& top, float& right, float& bo
 		right = left + KOOPA_BBOX_WIDTH;
 		bottom = top + KOOPA_BBOX_HEIGHT;
 	}
-	DebugOut(L"[DEBUG] ParaKoopa BBOX: x=%.2f, y=%.2f, L=%.2f, T=%.2f, R=%.2f, B=%.2f, state=%d\n",
-		x, y, left, top, right, bottom, state);
+	
 }

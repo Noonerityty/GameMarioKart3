@@ -21,6 +21,12 @@
 
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 {
+
+	vy += ay * dt;
+	vx += ax * dt;
+
+	if (abs(vx) > abs(maxVx)) vx = maxVx;
+
 	if (isStunned)
 	{
 		vx = 0;
@@ -34,6 +40,9 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		return;
 
 	}
+
+
+
 	if (isKickingKoopa)
 	{
 		/*ULONGLONG timer = GetTickCount64();*/
@@ -70,11 +79,62 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		}
 	}
 
+	if (abs(vx) >= MARIO_RUNNING_SPEED - 0.05)
+	{
+		p_meter += MARIO_P_METER_CHARGE_RATE * dt;
+		if (p_meter > MARIO_P_METER_MAX)
+		{
+			p_meter = MARIO_P_METER_MAX;
+			if (level == MARIO_LEVEL_RACOON)
+			{
+				/*if (CGame::GetInstance()->IsKeyDown(DIK_S))
+				{
+					canFly = true;
+				}*/
+				canFly = true; 
+			}
+		}
+	}
+	else
+	{
+		if (p_meter > 0)
+		{
+			p_meter -= MARRIO_P_METER_DECREASE_RATE * dt;
+			if (p_meter < 0) p_meter = 0;
+		}
+	}
+	
+	if (isFlying && level == MARIO_LEVEL_RACOON)
+	{
 
-	vy += ay * dt;
-	vx += ax * dt;
+		if (jumpPressed && !jumpPressedLastFrame)
+		{
+			vy = -1;
+			/*ay = MARIO_FLYING_GRAVITY;*/
+			lastSpamFly = GetTickCount64();
+		}
 
-	if (abs(vx) > abs(maxVx)) vx = maxVx;
+		if (GetTickCount64() - lastSpamFly > MARIO_SPAM_FLY_TIME)
+		{
+			isFlying = false;
+		}
+	}
+	else
+	{
+		if (jumpPressed && !jumpPressedLastFrame && vy > 0)
+		{
+			vy = min(vy, 0.05);
+		}
+		
+	}
+
+
+	if (y < MARIO_MAX_FLYING_HEIGHT && vy < 0)
+	{
+		y = MARIO_MAX_FLYING_HEIGHT;
+		vy = 0.0f;
+	}
+	DebugOut(L"[INFO] Mario position: x = %f, y = %f, vx = %f, vy = %f\n", x, y, vx, vy);
 
 	// reset untouchable timer if untouchable time has passed
 	if ( GetTickCount64() - untouchable_start > MARIO_UNTOUCHABLE_TIME) 
@@ -82,6 +142,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		untouchable_start = 0;
 		untouchable = 0;
 	}
+	jumpPressedLastFrame = jumpPressed;
 	CGameObject::Update(dt, coObjects);
 
 	CCollision::GetInstance()->Process(this, dt, coObjects);
@@ -523,7 +584,14 @@ int CMario::GetAniIdBig()
 int CMario::GetAniIdRacoon()
 {
 	int aniId = -1;
-	if (!isOnPlatform)
+	if (isFlying)
+	{
+		if (nx >= 0)
+			aniId = ID_ANI_MARIO_RACOON_FLYING_RIGHT;
+		else
+			aniId = ID_ANI_MARIO_RACOON_FLYING_LEFT;
+	}
+	else if (!isOnPlatform)
 	{
 		if (abs(ax) == MARIO_ACCEL_RUN_X)
 		{
@@ -678,10 +746,24 @@ void CMario::SetState(int state)
 		if (isSitting) break;
 		if (isOnPlatform)
 		{
-			if (abs(this->vx) == MARIO_RUNNING_SPEED)
-				vy = -MARIO_JUMP_RUN_SPEED_Y*1.2;
+			if (canFly)
+			{
+				isFlying = true;
+
+				canFly = false; // Reset flying ability after jump
+				p_meter = 0; // Reset power meter after flying
+
+			}
 			else
-				vy = -MARIO_JUMP_SPEED_Y *1.1;
+			{
+				if (abs(this->vx) == MARIO_RUNNING_SPEED)
+					vy = -MARIO_JUMP_RUN_SPEED_Y * 1.2;
+				else
+					vy = -MARIO_JUMP_SPEED_Y * 1.1;
+			}
+
+
+			
 		}
 		break;
 
