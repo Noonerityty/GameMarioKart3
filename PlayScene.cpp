@@ -227,7 +227,8 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	}
 	case OBJECT_TYPE_PIRANHA:
 	{
-		obj = new CPiranha(x, y);
+		int type = atoi(tokens[3].c_str()); // 1: red, 2: green, 3: melee
+		obj = new CPiranha(x, y, type);
 		piranhas.push_back(obj);
 		break;
 	}

@@ -79,7 +79,15 @@ void CPiranha::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			y = startY - PIRANHA_BBOX_HEIGHT;
 			if (timer > PIRANHA_SHOW_TIME)
 			{
-				SetState(PIRANHA_STATE_SHOOTING);
+				if(type != PIRANHA_TYPE_MELEE)
+				{
+					SetState(PIRANHA_STATE_SHOOTING);
+				}
+				else
+				{
+					SetState(PIRANHA_STATE_FALLING);
+				}
+		
 			}
 			break;
 		}
@@ -185,14 +193,79 @@ void CPiranha::SetState(int state)
 
 	}
 }
-void CPiranha::Render()
+
+int CPiranha::GetAniIdRedPiranha()
 {
-	/*RenderBoudingBox();*/
-	switch(state)
+	int ani;
+	switch (state)
+	{
+	case PIRANHA_STATE_HIDDEN:
+	{
+		ani = 10000;
+		break;
+	}
+	case PIRANHA_STATE_RISING:
+	case PIRANHA_STATE_FALLING:
+	{
+		if (marioPosition == 0)
+		{
+			/*CAnimations::GetInstance()->Get(PIRANHA_ANIMATION_LEFT_ABOVE)->Render(x, y);*/
+			ani = PIRANHA_ANI_LEFT_ABOVE_MOVING;
+		}
+		else if (marioPosition == 1)
+		{
+			ani = PIRANHA_ANI_RIGHT_ABOVE_MOVING;
+		}
+		else if (marioPosition == 2)
+		{
+			ani = PIRANHA_ANI_LEFT_BELOW_MOVING;
+		}
+		else if (marioPosition == 3)
+		{
+			ani = PIRANHA_ANI_RIGHT_BELOW_MOVING;
+		}
+
+		break;
+	}
+	case PIRANHA_STATE_SHOWING:
+	case PIRANHA_STATE_SHOOTING:
+	{
+		if (marioPosition == 0)
+		{
+			ani = PIRANHA_ANI_LEFT_ABOVE_IDLE;
+		}
+		else if (marioPosition == 1)
+		{
+			ani = PIRANHA_ANI_RIGHT_ABOVE_IDLE;
+		}
+		else if (marioPosition == 2)
+		{
+			ani = PIRANHA_ANI_LEFT_BELOW_IDLE;
+		}
+		else if (marioPosition == 3)
+		{
+			ani = PIRANHA_ANI_RIGHT_BELOW_IDLE;
+		}
+
+
+		break;
+	}
+
+
+	default:
+		break;
+	}
+
+	return ani;
+}
+int CPiranha::GetAnIdGreenPiranha()
+{
+	int ani;
+	switch (state)
 	{
 		case PIRANHA_STATE_HIDDEN:
 		{
-			CSprites::GetInstance()->Get(100000)->Draw(x, y);
+			ani = 10000;
 			break;
 		}
 		case PIRANHA_STATE_RISING:
@@ -200,19 +273,19 @@ void CPiranha::Render()
 		{
 			if (marioPosition == 0)
 			{
-				CAnimations::GetInstance()->Get(PIRANHA_ANIMATION_LEFT_ABOVE)->Render(x, y);
+				ani = PIRANHA_ANI_LEFT_ABOVE_MOVING_GREEN;
 			}
-			else if(marioPosition == 1)
+			else if (marioPosition == 1)
 			{
-				CAnimations::GetInstance()->Get(PIRANHA_ANIMATION_RIGHT_ABOVE)->Render(x, y);
+				ani = PIRANHA_ANI_RIGHT_ABOVE_MOVING_GREEN;
 			}
 			else if (marioPosition == 2)
 			{
-				CAnimations::GetInstance()->Get(PIRANHA_ANIMATION_LEFT_BELOW)->Render(x, y);
+				ani = PIRANHA_ANI_LEFT_BELOW_MOVING_GREEN;
 			}
 			else if (marioPosition == 3)
 			{
-				CAnimations::GetInstance()->Get(PIRANHA_ANIMATION_RIGHT_BELOW)->Render(x, y);
+				ani = PIRANHA_ANI_RIGHT_BELOW_MOVING_GREEN;
 			}
 
 			break;
@@ -220,43 +293,52 @@ void CPiranha::Render()
 		case PIRANHA_STATE_SHOWING:
 		case PIRANHA_STATE_SHOOTING:
 		{
+
 			if (marioPosition == 0)
 			{
-				CSprites::GetInstance()->Get(PIRANHA_SPRITES_LEFT_ABOVE)->Draw(x, y);
+				ani = PIRANHA_ANI_LEFT_ABOVE_IDLE_GREEN;
 			}
-			else if(marioPosition == 1)
+			else if (marioPosition == 1)
 			{
-				CSprites::GetInstance()->Get(PIRANHA_SPRITES_RIGHT_ABOVE)->Draw(x, y);
+				ani = PIRANHA_ANI_RIGHT_ABOVE_IDLE_GREEN;
 			}
 			else if (marioPosition == 2)
 			{
-				CSprites::GetInstance()->Get(PIRANHA_SPRITES_LEFT_BELOW)->Draw(x, y);
+				ani = PIRANHA_ANI_LEFT_BELOW_IDLE_GREEN;
 			}
 			else if (marioPosition == 3)
 			{
-				CSprites::GetInstance()->Get(PIRANHA_SPRITES_RIGHT_BELOW)->Draw(x, y);
+				ani = PIRANHA_ANI_RIGHT_BELOW_IDLE_GREEN;
 			}
-
-			
-			break;
 		}
 
-		
-	default:
-		break;
 	}
-	//if (state == PIRANHA_STATE_HIDDEN)
-	//{
-	//	CSprites::GetInstance()->Get(100000)->Draw(x, y);
-	//}
-	//else if (state == PIRANHA_STATE_RISING || (state == PIRANHA_STATE_SHOWING && isMarioAbove == true))
-	//{
-	//	CAnimations::GetInstance()->Get(105001)->Render(x, y);
-	//}
-	//else if (state == PIRANHA_STATE_RISING || (state == PIRANHA_STATE_SHOWING && isMarioAbove == false))
-	//{
-	//	CSprites::GetInstance()->Get(100000)->Draw(x, y);
-	//}
+	return ani;
+}
+
+void CPiranha::Render()
+{
+	CAnimations* animations = CAnimations::GetInstance();
+	int ani;
+	if (type == PIRANHA_TYPE_RED)
+	{
+		ani = GetAniIdRedPiranha();
+	}
+	else if (type == PIRANHA_TYPE_GREEN)
+	{
+		ani = GetAnIdGreenPiranha();
+	}
+	else if (type == PIRANHA_TYPE_MELEE)
+	{
+		ani = PIRANHA_ANI_MELEE;
+	}
+	else
+	{
+		return; // Không render nếu không phải loại Piranha hợp lệ
+		
+	}
+	animations->Get(ani)->Render(x, y);
+
 
 }
 float CPiranha::DistanceMario()
