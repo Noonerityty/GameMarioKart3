@@ -133,6 +133,12 @@
 #define ID_ANI_MARIO_RACOON_FLYING_RIGHT 1838
 #define ID_ANI_MARIO_RACOON_FLYING_LEFT 1839
 
+#define ID_ANI_MARIO_RACOON_TAIL_ATTACK_IDLE_RIGHT 1840
+#define ID_ANI_MARIO_RACOON_TAIL_ATTACK_IDLE_LEFT 1841
+
+#define ID_ANI_MARIO_RACOON_TAIL_ATTACK_MOVING_RIGHT 1842
+#define ID_ANI_MARIO_RACOON_TAIL_ATTACK_MOVING_LEFT 1843
+
 #pragma endregion
 
 #define GROUND_Y 160.0f
@@ -171,6 +177,13 @@
 #define MARIO_MAX_FLYING_HEIGHT -242
 
 
+//TAIL RACOON
+#define MARIO_TAIL_ATTACK_OFFSET_X  10
+#define MARIO_TAIL_ATTACK_OFFSET_Y  6
+#define MARIO_TAIL_ATTACK_FRAME_TIME 100
+#define MArio_TAIL_ATTACK_TIMEOUT 500
+
+
 class CMario : public CGameObject
 {
 	BOOLEAN isSitting;
@@ -184,12 +197,15 @@ class CMario : public CGameObject
 	ULONGLONG stunned_start;
 	ULONGLONG kick_time_out;
 	ULONGLONG lastSpamFly;
+	ULONGLONG tailAttackStartTime;
 	BOOLEAN isOnPlatform;
 	int coin; 
 	bool isStunned = false;
 	CKoopa* heldKoopa = NULL;
 	bool isHolding = false;
 	bool isKickingKoopa = false;
+	bool isTailAttacking;
+	bool tailCreated;
 	bool isFlying;          
 	float p_meter;          
 	bool canFly;            
@@ -246,5 +262,12 @@ public:
 	void ReleaseKoopa();
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 	void ProcessMarioDie();
+
+	void StartTailAttack();
+	void TailAttackEvent();
+
+	bool isHoldingKoopa() { return isHolding; }
+	int GetLevel() { return level; }
+	bool GetIsSitting() { return isSitting; }
 	
 };

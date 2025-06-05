@@ -6,6 +6,7 @@
 #include "Mario.h"
 #include "debug.h"
 #include "Leaf.h"
+#include "TailRacoon.h"
 
 void CQuestionBlock::TriggerQuestionBlock()
 {
@@ -61,6 +62,12 @@ void CQuestionBlock::OnCollisionWith(LPCOLLISIONEVENT e)
 		{
 			TriggerQuestionBlock();
 		}
+		else if (dynamic_cast<CTailRacoon*>(e->obj) != NULL )
+		{
+			TriggerQuestionBlock();
+			
+		}
+		
 	
 }
 void CQuestionBlock::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)

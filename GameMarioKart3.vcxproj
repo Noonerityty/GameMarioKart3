@@ -160,6 +160,7 @@
     <ClCompile Include="SinglePlatform.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Sprites.cpp" />
+    <ClCompile Include="TailRacoon.cpp" />
     <ClCompile Include="Textures.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="VerticalPlatform.cpp" />
@@ -196,6 +197,7 @@
     <ClInclude Include="LayerBackGround.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Sprites.h" />
+    <ClInclude Include="TailRacoon.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Textures.h" />
     <ClInclude Include="Utils.h" />

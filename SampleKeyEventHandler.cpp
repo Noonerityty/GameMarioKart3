@@ -49,6 +49,10 @@ void CSampleKeyHandler::OnKeyUp(int KeyCode)
 		break;
 	case DIK_A:
 		mario->ReleaseKoopa();
+		if(!mario->isHoldingKoopa() && mario->GetLevel() == MARIO_LEVEL_RACOON && !mario->GetIsSitting())
+		{
+			mario->StartTailAttack();
+		}
 
 		break;
 	}

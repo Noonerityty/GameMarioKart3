@@ -16,6 +16,7 @@
 #include "PiranhaBullet.h"
 #include "Leaf.h"
 #include "ParaKoopa.h"
+#include "TailRacoon.h"
 
 #include "Collision.h"
 
@@ -39,8 +40,26 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		
 		return;
 
+	
 	}
 
+
+
+	if (isTailAttacking)
+	{
+		if (GetTickCount64() - tailAttackStartTime > MARIO_TAIL_ATTACK_FRAME_TIME && !tailCreated)
+		{
+			TailAttackEvent();
+			tailCreated = true;
+		}
+		if (GetTickCount64() - tailAttackStartTime > MArio_TAIL_ATTACK_TIMEOUT)
+		{
+			isTailAttacking = false;
+		}
+		
+
+	}
+	//DebugOut(L"[INFO] Mario state: %d, level: %d, isTailAttacking: %d, isHolding: %d, isKickingKoopa: %d\n", state, level, isTailAttacking, isHolding, isKickingKoopa);
 
 
 	if (isKickingKoopa)
@@ -78,7 +97,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		
 		}
 	}
-
+	//p_Meter
 	if (abs(vx) >= MARIO_RUNNING_SPEED - 0.05)
 	{
 		p_meter += MARIO_P_METER_CHARGE_RATE * dt;
@@ -134,7 +153,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		y = MARIO_MAX_FLYING_HEIGHT;
 		vy = 0.0f;
 	}
-	DebugOut(L"[INFO] Mario position: x = %f, y = %f, vx = %f, vy = %f\n", x, y, vx, vy);
+	/*DebugOut(L"[INFO] Mario position: x = %f, y = %f, vx = %f, vy = %f\n", x, y, vx, vy);*/
 
 	// reset untouchable timer if untouchable time has passed
 	if ( GetTickCount64() - untouchable_start > MARIO_UNTOUCHABLE_TIME) 
@@ -142,6 +161,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		untouchable_start = 0;
 		untouchable = 0;
 	}
+
 	jumpPressedLastFrame = jumpPressed;
 	CGameObject::Update(dt, coObjects);
 
@@ -373,7 +393,7 @@ void CMario::OnCollisionWithQuestionBlock(LPCOLLISIONEVENT e)
 	{
 		qblock->TriggerQuestionBlock();
 	}
-	DebugOut(L"[INFO] Mario hit question block\n");
+	/*DebugOut(L"[INFO] Mario hit question block\n");*/
 	if(qblock->GetItemType() == 0)
 	coin++;
 
@@ -584,7 +604,29 @@ int CMario::GetAniIdBig()
 int CMario::GetAniIdRacoon()
 {
 	int aniId = -1;
-	if (isFlying)
+	if (isTailAttacking)
+	{
+		if (vx == 0)
+		{
+			if (nx > 0)
+			{
+				aniId = ID_ANI_MARIO_RACOON_TAIL_ATTACK_IDLE_RIGHT;
+			}
+			else
+			{
+				aniId = ID_ANI_MARIO_RACOON_TAIL_ATTACK_IDLE_LEFT;
+			}
+		}
+		else if(vx > 0)
+		{
+			aniId = ID_ANI_MARIO_RACOON_TAIL_ATTACK_MOVING_RIGHT;
+		}
+		else if (vx < 0)
+		{
+			aniId = ID_ANI_MARIO_RACOON_TAIL_ATTACK_MOVING_LEFT;
+		}
+	}
+	else if (isFlying)
 	{
 		if (nx >= 0)
 			aniId = ID_ANI_MARIO_RACOON_FLYING_RIGHT;
@@ -702,7 +744,7 @@ void CMario::Render()
 				aniId = GetAniIdSmall();
 	}
 
-	DebugOut(L"[DEBUG] Render Mario state: %d, level: %d, aniId: %d\n", isKickingKoopa	, level, aniId);
+	/*DebugOut(L"[DEBUG] Render Mario state: %d, level: %d, aniId: %d\n", isKickingKoopa	, level, aniId);*/
 
 	animations->Get(aniId)->Render(x, y);
 
@@ -881,3 +923,34 @@ void CMario::ProcessMarioDie()
 
 }
 
+void CMario::StartTailAttack()
+{
+
+	if (isTailAttacking)
+		return;
+	isTailAttacking = true;
+	tailAttackStartTime = GetTickCount64();
+	tailCreated = false;
+}
+
+void CMario::TailAttackEvent()
+{
+
+	float tailX;
+	float tailY;
+	if (nx > 0)
+	{
+		tailX = x + MARIO_TAIL_ATTACK_OFFSET_X; //10 
+	}
+	else
+	{
+		tailX = x - MARIO_TAIL_ATTACK_OFFSET_X;
+	}
+	tailY = y + MARIO_TAIL_ATTACK_OFFSET_Y; //6
+	CScene* currentScene = CGame::GetInstance()->GetCurrentScene();
+	CPlayScene* playscene = dynamic_cast<CPlayScene*>(currentScene);
+
+	playscene->AddObject(new CTailRacoon(tailX, tailY, this));
+	DebugOut(L"[INFO] Mario created tail at position: x = %f, y = %f\n", tailX, this->x);
+	
+}
