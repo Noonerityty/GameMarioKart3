@@ -17,6 +17,7 @@
 #include "Leaf.h"
 #include "ParaKoopa.h"
 #include "TailRacoon.h"
+#include "Button.h"
 
 #include "Collision.h"
 
@@ -234,6 +235,8 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 		OnCollisionWithKoopa(e);
 	else if (dynamic_cast<CLeaf*>(e->obj))
 		OnCollisionWithLeaf(e);
+	else if (dynamic_cast<CButton*>(e->obj))
+		OnCollisionWithButton(e);
 
 
 
@@ -415,6 +418,13 @@ void CMario::OnCollisionWithLeaf(LPCOLLISIONEVENT e)
 void CMario::OnCollisionWithQuestionBlock(LPCOLLISIONEVENT e)
 {
 	CQuestionBlock* qblock = dynamic_cast<CQuestionBlock*>(e->obj);
+	//if (qblock->GetItemType() == QUESTION_NLOCK_ITEM_TYPE_SIMPLE_BRICK)
+	//{
+	//	if (e->ny > 0)
+	//	{
+	//		this->Delete();
+	//	}
+	//}
 	if (e->ny > 0)
 	{
 		qblock->TriggerQuestionBlock();
@@ -424,6 +434,36 @@ void CMario::OnCollisionWithQuestionBlock(LPCOLLISIONEVENT e)
 	coin++;
 
 }
+
+void CMario::OnCollisionWithButton(LPCOLLISIONEVENT e)
+{
+	CButton* button = dynamic_cast<CButton*>(e->obj);
+	if (e->ny < 0 && !button->IsActivated())
+	{
+		button->Activate();
+		CPlayScene* playScene = dynamic_cast<CPlayScene*>(CGame::GetInstance()->GetCurrentScene());
+		if (playScene)
+		{
+			
+			for (auto obj : playScene->GetQuestionBlocks())
+			{
+				
+				CQuestionBlock* qBlock = dynamic_cast<CQuestionBlock*>(obj);
+				if (qBlock == NULL) continue; // Kiểm tra nếu obj là CQuestionBlock
+				if (qBlock && qBlock->IsDeletedQBlock())
+				{
+					continue;
+				}
+				if (qBlock && qBlock->GetItemTypeOfQuestionBlock() == QUESTION_NLOCK_ITEM_TYPE_SIMPLE_BRICK) 
+				{
+					qBlock->ConvertToCoin(); // Chuyển đổi thành coin
+				}
+				
+			}
+		}
+	}
+}
+
 void CMario::OnCollisionWithPortal(LPCOLLISIONEVENT e)
 {
 	CPortal* p = (CPortal*)e->obj;

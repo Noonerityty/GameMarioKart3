@@ -209,7 +209,8 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case OBJECT_TYPE_QUESTION_BLOCK:
 	{
 		int itemType = atoi(tokens[3].c_str());
-		blocks.push_back(new CQuestionBlock(x, y, itemType));
+		int typeBlock = atoi(tokens[4].c_str()); // 1: simple brick, 2: normal question block
+		questionBlocks.push_back(new CQuestionBlock(x, y, itemType, typeBlock));
 		break;
 	}
 	case OBJECT_TYPE_MUSHROOM:
@@ -273,6 +274,10 @@ void CPlayScene::LayerManagement()
 	for (size_t i = 0; i < blocks.size(); i++)
 	{
 		objects.push_back(blocks[i]);
+	}
+	for (size_t i = 0; i < questionBlocks.size(); i++)
+	{
+		objects.push_back(questionBlocks[i]);
 	}
 	for (size_t i = 0; i < enemies.size(); i++)
 	{

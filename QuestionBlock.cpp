@@ -7,6 +7,7 @@
 #include "debug.h"
 #include "Leaf.h"
 #include "TailRacoon.h"
+#include "Button.h"
 
 void CQuestionBlock::TriggerQuestionBlock()
 {
@@ -52,6 +53,18 @@ void CQuestionBlock::TriggerQuestionBlock()
 			playscene->AddObject(leaf);
 		}
 	}
+	else if (itemType == 98)
+	{
+		CButton* button = new CButton(this->x, this->y - 16);
+		if (playscene)
+		{
+			playscene->AddObject(button);
+		}
+	}
+	else if (itemType == QUESTION_NLOCK_ITEM_TYPE_SIMPLE_BRICK)
+	{
+		SetDeletedQBlock(); 
+	}
 }
 
 void CQuestionBlock::OnCollisionWith(LPCOLLISIONEVENT e)
@@ -72,6 +85,11 @@ void CQuestionBlock::OnCollisionWith(LPCOLLISIONEVENT e)
 }
 void CQuestionBlock::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
+	/*if (itemType == 99)
+	{
+		isSimplebrick = true;
+	}*/
+
 	if (isBouncing)
 	{
 		if (GetTickCount64() - bounceStartTime < 120)
@@ -92,21 +110,71 @@ void CQuestionBlock::Render()
 	int id = -1;
 	CAnimations* ani = CAnimations::GetInstance();
 	CSprites* sprites = CSprites::GetInstance();
-	if (isEmpty)
+	if (isDeletedQBlock)
+		return; // If the block is deleted, do not render it
+
+
+	if (typeBlock == 1)
+	{
+		if(!isEmpty)
+		id = ID_ANI_QUESTION_BLOCK_SIMPLE_BRICK;
+		else
+		id = emptyBlock;
+	}
+	else
+	{
+		if (!isEmpty)
+			id = ID_ANI_QUESTION_BLOCK;
+		else
+			id = emptyBlock;
+	}
+	ani->Get(id)->Render(x, y);
+	/*else if (itemType == 98 || itemType == 97)
+	{
+
+	}
+	else if (isSimplebrick)
+	{
+		id = ID_ANI_QUESTION_BLOCK_SIMPLE_BRICK;
+		ani->Get(id)->Render(x, y);
+	}
+	else if (isEmpty)
 	{
 		id = emptyBlock;
 		sprites->Get(id)->Draw(x, y);
 	}
 	else
 	{
+
 		id = ID_ANI_QUESTION_BLOCK;
 		ani->Get(id)->Render(x, y);
-	}
+	}*/
 }
 void CQuestionBlock::GetBoundingBox(float& l, float& t, float& r, float& b)
 {
+	if (isDeletedQBlock)
+	{
+		l = t = r = b = 0; // No bounding box if the block is deleted
+		return;
+	}
+
 	l = x - QUESTION_BLOCK_BBOX_WIDTH  / 2;
 	t = y - QUESTION_BLOCK_BBOX_HEIGHT / 2;
 	r = l + QUESTION_BLOCK_BBOX_WIDTH;
 	b = t + QUESTION_BLOCK_BBOX_HEIGHT;
+}
+
+void CQuestionBlock::ConvertToCoin()
+{
+	if (!isSimplebrick && isDeletedQBlock)
+		return;
+	CScene* currentScene = CGame::GetInstance()->GetCurrentScene();
+	CPlayScene* playscene = dynamic_cast<CPlayScene*>(currentScene);
+	if (playscene)
+	{
+		CCoin* coin = new CCoin(this->x, this->y, 0);
+		playscene->AddObject(coin);
+	}
+	SetDeletedQBlock(); // Mark the block as deleted
+
 }

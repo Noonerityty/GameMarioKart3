@@ -19,6 +19,7 @@ protected:
 	vector<LPGAMEOBJECT> enemies;
 	vector<LPGAMEOBJECT> piranhas;
 	vector<LPGAMEOBJECT> layerBacgrounds;
+	vector<LPGAMEOBJECT> questionBlocks;
 	vector<LPGAMEOBJECT> blocks;
 
 	vector<LPGAMEOBJECT> objects;
@@ -46,6 +47,7 @@ public:
 	void LayerManagement();
 	void AddObject(LPGAMEOBJECT obj);
 	bool IsInCameraView(float x, float y);
+	vector<LPGAMEOBJECT> GetQuestionBlocks() { return questionBlocks; }
 
 	static bool IsGameObjectDeleted(const LPGAMEOBJECT& o);
 };

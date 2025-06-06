@@ -225,6 +225,7 @@ class CMario : public CGameObject
 	void OnCollisionWithPiranhaBullet(LPCOLLISIONEVENT e);
 	void OnCollisionWithKoopa(LPCOLLISIONEVENT e);
 	void OnCollisionWithLeaf(LPCOLLISIONEVENT e);
+	void OnCollisionWithButton(LPCOLLISIONEVENT e);
 	
 	int GetAniIdBig();
 	int GetAniIdSmall();
@@ -239,7 +240,7 @@ public:
 		ay = MARIO_GRAVITY; 
 		lastSpamFly = 0;
 		canFly = false;
-		level = 1;
+		level = 3;
 		untouchable = 0;
 		untouchable_start = -1;
 		isOnPlatform = false;

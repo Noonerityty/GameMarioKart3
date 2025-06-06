@@ -4,7 +4,7 @@
 #include "Mario.h"
 
 #define TAIL_RACOON_BBOX_WIDTH 14
-#define TAIL_RACOON_BBOX_HEIGHT 10
+#define TAIL_RACOON_BBOX_HEIGHT 8
 
 class CTailRacoon : public CGameObject
 {
@@ -18,7 +18,7 @@ protected:
 public:
 	CTailRacoon(float x, float y, CMario* mario) : CGameObject(x, y)
 	{
-		lifeTime = 900;
+		lifeTime = 200;
 		startTime = GetTickCount64();
 		this->mario = mario;
 
