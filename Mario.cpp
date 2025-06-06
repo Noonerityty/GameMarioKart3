@@ -23,9 +23,14 @@
 
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 {
+	//Diều chỉnh tốc độ rơi để đánh đuôi hơn
 
 	vy += ay * dt;
 	vx += ax * dt;
+
+	
+	
+
 	//if (state == MARIO_STATE_DIE)
 	//{
 	//	// Chỉ cập nhật vị trí khi chết, bỏ qua các logic khác
@@ -70,20 +75,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 
 
 
-	if (isTailAttacking)
-	{
-		if (GetTickCount64() - tailAttackStartTime > MARIO_TAIL_ATTACK_FRAME_TIME && !tailCreated)
-		{
-			TailAttackEvent();
-			tailCreated = true;
-		}
-		if (GetTickCount64() - tailAttackStartTime > MArio_TAIL_ATTACK_TIMEOUT)
-		{
-			isTailAttacking = false;
-		}
-		
-
-	}
 	//DebugOut(L"[INFO] Mario state: %d, level: %d, isTailAttacking: %d, isHolding: %d, isKickingKoopa: %d\n", state, level, isTailAttacking, isHolding, isKickingKoopa);
 
 
@@ -136,6 +127,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 					canFly = true;
 				}*/
 				canFly = true; 
+				isTailAttacking = false; // Reset tail attack when running fast
 			}
 		}
 	}
@@ -145,32 +137,99 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		{
 			p_meter -= MARRIO_P_METER_DECREASE_RATE * dt;
 			if (p_meter < 0) p_meter = 0;
+			canFly = false; // Không thể bay nếu không chạy
 		}
 	}
-	
-	if (isFlying && level == MARIO_LEVEL_RACOON)
-	{
 
-		if (jumpPressed && !jumpPressedLastFrame)
-		{
-			vy = -1;
-			/*ay = MARIO_FLYING_GRAVITY;*/
-			lastSpamFly = GetTickCount64();
-		}
 
-		if (GetTickCount64() - lastSpamFly > MARIO_SPAM_FLY_TIME)
-		{
-			isFlying = false;
-		}
-	}
-	else
+	if (level == MARIO_LEVEL_RACOON)
 	{
+		
+		
+
+		if (isTailAttacking)
+		{
+			if (GetTickCount64() - tailAttackStartTime > MARIO_TAIL_ATTACK_FRAME_TIME && !tailCreated)
+			{
+				TailAttackEvent();
+				tailCreated = true;
+			}
+			if (GetTickCount64() - tailAttackStartTime > MArio_TAIL_ATTACK_TIMEOUT)
+			{
+				isTailAttacking = false;
+				tailCreated = false; // Reset tailCreated when tail attack ends
+			}
+
+			if (!isOnPlatform)
+			{
+				vy = 0.01f; // Giữ Mario đứng yên trong trạng thái tấn công đuôi
+				ay = MARIO_FLYING_GRAVITY;
+			}
+
+
+		}
+		else
+		{
+			ay = MARIO_GRAVITY;
+		}
+		
+		if (isFlying)
+		{
+			if (jumpPressed && !jumpPressedLastFrame)
+			{
+				vy = MARRIO_FLYING_BOOST;
+				ay = MARIO_FLYING_GRAVITY;
+				lastSpamFly = GetTickCount64();
+			}
+
+			if (GetTickCount64() - lastSpamFly > MARIO_SPAM_FLY_TIME)
+			{
+				isFlying = false;
+			}
+		}
+		else
+		{
+			ay = MARIO_GRAVITY;
+		}
+		
+
+
 		if (jumpPressed && !jumpPressedLastFrame && vy > 0)
 		{
 			vy = min(vy, 0.05);
+			ay = MARIO_FLYING_GRAVITY;
 		}
-		
+		else
+		{
+			ay = MARIO_GRAVITY;
+		}
+
+
 	}
+	
+	//if (isFlying && level == MARIO_LEVEL_RACOON)
+	//{
+
+	//	if (jumpPressed && !jumpPressedLastFrame)
+	//	{
+	//		vy = -1;
+	//		/*ay = MARIO_FLYING_GRAVITY;*/
+	//		lastSpamFly = GetTickCount64();
+	//	}
+
+	//	if (GetTickCount64() - lastSpamFly > MARIO_SPAM_FLY_TIME)
+	//	{
+	//		isFlying = false;
+	//	}
+	//}
+	//else
+	//{
+	//	if (jumpPressed && !jumpPressedLastFrame && vy > 0)
+	//	{
+	//		vy = min(vy, 0.05);
+	//	}
+	//	
+	//}
 
 
 	if (y < MARIO_MAX_FLYING_HEIGHT && vy < 0)
@@ -1000,8 +1059,9 @@ void CMario::ProcessMarioDie()
 void CMario::StartTailAttack()
 {
 
-	if (isTailAttacking)
+	if (isTailAttacking || p_meter >= MARIO_P_METER_MAX - 0.05)
 		return;
+	
 	isTailAttacking = true;
 	tailAttackStartTime = GetTickCount64();
 	tailCreated = false;
