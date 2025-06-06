@@ -30,6 +30,7 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath):
 {
 	player = NULL;
 	key_handler = new CSampleKeyHandler(this);
+	hud = NULL;
 }
 
 
@@ -279,6 +280,15 @@ void CPlayScene::LayerManagement()
 	}
 
 	objects.push_back(player);
+
+	if (player != NULL)
+	{
+		hud = new CHud(player);
+		objects.push_back(hud);
+
+	}
+
+	
 }
 
 void CPlayScene::LoadAssets(LPCWSTR assetFile)
@@ -387,7 +397,20 @@ void CPlayScene::Update(DWORD dt)
 
 	if (cx < 0) cx = 0;
 
-	CGame::GetInstance()->SetCamPos(cx, /*0*/ cy);
+	//CGame::GetInstance()->SetCamPos(cx, /*0*/ cy);
+
+	//PurgeDeletedObjects();
+	float current_cam_x, current_cam_y;
+	game->GetCamPos(current_cam_x, current_cam_y);
+
+	// Sử dụng lerp để làm mịn chuyển động camera
+	float lerp_factor = 0.1f; // Tốc độ làm mịn (0.0f đến 1.0f)
+	cx = current_cam_x + lerp_factor * (cx - current_cam_x);
+	cy = current_cam_y + lerp_factor * (cy - current_cam_y);
+
+	/*DebugOut(L"[DEBUG] Target camera pos: x=%f, y=%f\n", cx, cy);*/
+
+	game->SetCamPos(cx, 0);
 
 	PurgeDeletedObjects();
 }

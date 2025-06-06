@@ -25,9 +25,33 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 
 	vy += ay * dt;
 	vx += ax * dt;
+	//if (state == MARIO_STATE_DIE)
+	//{
+	//	// Chỉ cập nhật vị trí khi chết, bỏ qua các logic khác
+	//	vx += ax * dt;
+	//	vy += ay * dt;
+	//	DebugOut(L"[INFO] Update in DIE state: vx = %f, vy = %f, heldKoopa = %p\n", vx, vy, heldKoopa);
+	//	return; // Thoát sớm để tránh xử lý logic không cần thiết
+	//}
 
 	if (abs(vx) > abs(maxVx)) vx = maxVx;
+	if (timer >= 0 && state != MARIO_STATE_DIE)
+	{
+		ULONGLONG currentTime = GetTickCount64();
+		/*timer1s += dt;
+		if (timer1s >= 1000)
+		{
+			TimerEvent();
+			timer1s -= 1000;
+		}*/
+		if (currentTime - timer1s >= 1000)
+		{
+			Timer1sEvent();
+			timer1s = currentTime; // Reset timer1s to current time
+		}
 
+	}
+	
 	if (isStunned)
 	{
 		vx = 0;
@@ -154,13 +178,15 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		vy = 0.0f;
 	}
 	/*DebugOut(L"[INFO] Mario position: x = %f, y = %f, vx = %f, vy = %f\n", x, y, vx, vy);*/
-
+	/*DebugOut(L"[DEBUG] dt = %d, p_meter = %f\n", dt, p_meter);*/
 	// reset untouchable timer if untouchable time has passed
 	if ( GetTickCount64() - untouchable_start > MARIO_UNTOUCHABLE_TIME) 
 	{
 		untouchable_start = 0;
 		untouchable = 0;
 	}
+
+	
 
 	jumpPressedLastFrame = jumpPressed;
 	CGameObject::Update(dt, coObjects);
@@ -745,7 +771,7 @@ void CMario::Render()
 	}
 
 	/*DebugOut(L"[DEBUG] Render Mario state: %d, level: %d, aniId: %d\n", isKickingKoopa	, level, aniId);*/
-
+	
 	animations->Get(aniId)->Render(x, y);
 
 	//RenderBoundingBox();
@@ -907,6 +933,14 @@ void CMario::SetLevel(int l)
 
 void CMario::ProcessMarioDie()
 {
+	//if (state == MARIO_STATE_DIE)
+	//	return;
+	//if (timer <= 0)
+	//{/*
+	//	SetLevel(MARIO_LEVEL_SMALL);*/
+	//	SetState(MARIO_STATE_DIE);
+	//	//StartUntouchable();
+	//}
 	if(level == MARIO_LEVEL_RACOON)
 	{
 		SetLevel(MARIO_LEVEL_BIG);
@@ -953,4 +987,17 @@ void CMario::TailAttackEvent()
 	playscene->AddObject(new CTailRacoon(tailX, tailY, this));
 	DebugOut(L"[INFO] Mario created tail at position: x = %f, y = %f\n", tailX, this->x);
 	
+}
+
+void CMario::Timer1sEvent()
+{
+	if (state != MARIO_STATE_DIE && timer >= 0)
+	{
+		timer--;
+		if (timer < 0)
+		{
+			ProcessMarioDie();
+			DebugOut(L"[INFO] Timer reached zero, processing Mario die\n");
+		}
+	}
 }

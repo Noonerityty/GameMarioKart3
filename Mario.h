@@ -168,8 +168,8 @@
 
 
 #define MARIO_P_METER_MAX 1.0f
-#define MARIO_P_METER_CHARGE_RATE 0.0005f
-#define MARRIO_P_METER_DECREASE_RATE 0.0007f
+#define MARIO_P_METER_CHARGE_RATE 0.003f
+#define MARRIO_P_METER_DECREASE_RATE 0.005f
 
 
 #define MARRIO_FLYING_BOOST -0.25f
@@ -198,6 +198,7 @@ class CMario : public CGameObject
 	ULONGLONG kick_time_out;
 	ULONGLONG lastSpamFly;
 	ULONGLONG tailAttackStartTime;
+	ULONGLONG timer1s;
 	BOOLEAN isOnPlatform;
 	int coin; 
 	bool isStunned = false;
@@ -211,6 +212,9 @@ class CMario : public CGameObject
 	bool canFly;            
 	bool jumpPressed;
 	bool jumpPressedLastFrame;
+	int timer;
+	int lives;
+	int score;
 
 	void OnCollisionWithGoomba(LPCOLLISIONEVENT e);
 	void OnCollisionWithCoin(LPCOLLISIONEVENT e);
@@ -235,11 +239,16 @@ public:
 		ay = MARIO_GRAVITY; 
 		lastSpamFly = 0;
 		canFly = false;
-		level = 3;
+		level = 1;
 		untouchable = 0;
 		untouchable_start = -1;
 		isOnPlatform = false;
 		coin = 0;
+		timer = 300; // Default timer
+		timer1s = GetTickCount64();
+		lives = 3; // Default lives
+
+		
           
 	}
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
@@ -269,5 +278,13 @@ public:
 	bool isHoldingKoopa() { return isHolding; }
 	int GetLevel() { return level; }
 	bool GetIsSitting() { return isSitting; }
+
+
+	void Timer1sEvent();
+
+	int GetCoin() { return coin; }
+	float GetPMeter() { return p_meter; }
+	int GetTimer() { return timer; }
+	int GetLives() { return lives; }
 	
 };

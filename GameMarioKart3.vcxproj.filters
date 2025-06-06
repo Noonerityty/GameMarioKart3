@@ -117,6 +117,9 @@
     <ClCompile Include="TailRacoon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Hud.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h">
@@ -227,6 +230,9 @@
     <ClInclude Include="TailRacoon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Hud.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="brick.txt" />
@@ -248,6 +254,7 @@
     <Text Include="paraGoomba.txt" />
     <Text Include="koopa.txt" />
     <Text Include="Leaf.txt" />
+    <Text Include="Hud.txt" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="mario.ico">
