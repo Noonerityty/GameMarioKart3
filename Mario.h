@@ -140,6 +140,8 @@
 #define ID_ANI_MARIO_RACOON_TAIL_ATTACK_MOVING_RIGHT 1842
 #define ID_ANI_MARIO_RACOON_TAIL_ATTACK_MOVING_LEFT 1843
 
+#define ID_ANI_MARIO_RACOON_INPUT_TUNNEL 1844
+
 #pragma endregion
 
 #define GROUND_Y 160.0f
@@ -184,6 +186,14 @@
 #define MARIO_TAIL_ATTACK_FRAME_TIME 0
 #define MArio_TAIL_ATTACK_TIMEOUT 300
 
+//door TUNNEL
+#define MARIO_X_TELEPORT_INPUT 2110
+#define MARIO_Y_TELEPORT_INPUT 210
+#define MARIO_X_TELEPORT_OUTPUT  2335
+#define MARIO_Y_TELEPORT_OUTPUT  140
+#define MARIO_TUNNEL_DOOR_TIME 500
+#define MARIO_TUNNEL_OFFSETY 32
+
 
 class CMario : public CGameObject
 {
@@ -213,9 +223,17 @@ class CMario : public CGameObject
 	bool canFly;            
 	bool jumpPressed;
 	bool jumpPressedLastFrame;
+	int isTunnelDoor;
 	int timer;
 	int lives;
 	int score;
+
+
+	bool isSliding = false;
+	ULONGLONG slideStartTime = 0;
+	float startY; 
+	int slidePhase;
+
 
 	void OnCollisionWithGoomba(LPCOLLISIONEVENT e);
 	void OnCollisionWithCoin(LPCOLLISIONEVENT e);
@@ -227,6 +245,7 @@ class CMario : public CGameObject
 	void OnCollisionWithKoopa(LPCOLLISIONEVENT e);
 	void OnCollisionWithLeaf(LPCOLLISIONEVENT e);
 	void OnCollisionWithButton(LPCOLLISIONEVENT e);
+	void OnCollisionWithTunnel(LPCOLLISIONEVENT e);
 	
 	int GetAniIdBig();
 	int GetAniIdSmall();
@@ -249,6 +268,7 @@ public:
 		timer = 300; // Default timer
 		timer1s = GetTickCount64();
 		lives = 3; // Default lives
+		
 
 		
           
@@ -288,5 +308,8 @@ public:
 	float GetPMeter() { return p_meter; }
 	int GetTimer() { return timer; }
 	int GetLives() { return lives; }
+	bool GetIsTunnelDoor() { return isTunnelDoor; }
+	void InputTunnelDoor();
+	void OutputTunnelDoor();
 	
 };

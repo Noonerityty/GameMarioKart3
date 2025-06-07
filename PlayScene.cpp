@@ -20,7 +20,7 @@
 #include "RedKoopa.h"
 #include "Leaf.h"
 #include "ParaKoopa.h"
-
+#include "Tunnel.h"
 #include "SampleKeyEventHandler.h"
 
 using namespace std;
@@ -182,7 +182,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		int sprite_end = atoi(tokens[8].c_str());
 
 		obj = new CVerticalPlatform(x, y, cell_width, cell_height, length, sprite_begin, sprite_middle, sprite_end);
-		blocks.push_back(obj);
+		Verticalplatforms.push_back(obj);
 		break;
 	}
 	case OBJECT_TYPE_SINGLE_PLATFORM:// thêm platformid = 6
@@ -234,7 +234,13 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		piranhas.push_back(obj);
 		break;
 	}
-
+	case OBJECT_TYPE_TUNNEL:
+	{
+		int number = atoi(tokens[3].c_str());
+		obj = new CTunnel(x, y, number);
+		Verticalplatforms.push_back(obj);
+		break;
+	}
 	case OBJECT_TYPE_PORTAL:
 	{
 		float r = (float)atof(tokens[3].c_str());
@@ -242,14 +248,16 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		int scene_id = atoi(tokens[5].c_str());
 		obj = new CPortal(x, y, r, b, scene_id);
 		objects.push_back(obj);
+		break;
 	}
 
 
-	break;
+	
 
 
 	default:
 		DebugOut(L"[ERROR] Invalid object type: %d\n", object_type);
+
 		return;
 	}
 
@@ -285,7 +293,10 @@ void CPlayScene::LayerManagement()
 	}
 
 	objects.push_back(player);
-
+	for (size_t i = 0; i < Verticalplatforms.size(); i++)
+	{
+		objects.push_back(Verticalplatforms[i]);
+	}
 	if (player != NULL)
 	{
 		hud = new CHud(player);
@@ -415,7 +426,7 @@ void CPlayScene::Update(DWORD dt)
 
 	/*DebugOut(L"[DEBUG] Target camera pos: x=%f, y=%f\n", cx, cy);*/
 
-	game->SetCamPos(cx, 0);
+	game->SetCamPos(cx, cy);
 
 	PurgeDeletedObjects();
 }

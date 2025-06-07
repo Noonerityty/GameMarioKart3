@@ -14,6 +14,7 @@ void CSampleKeyHandler::OnKeyDown(int KeyCode)
 	switch (KeyCode)
 	{
 	case DIK_DOWN:
+		if(!mario->GetIsTunnelDoor())
 		mario->SetState(MARIO_STATE_SIT);
 		break;
 	case DIK_S:

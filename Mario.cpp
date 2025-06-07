@@ -18,6 +18,7 @@
 #include "ParaKoopa.h"
 #include "TailRacoon.h"
 #include "Button.h"
+#include "Tunnel.h"
 
 #include "Collision.h"
 
@@ -140,6 +141,62 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 			canFly = false; // Không thể bay nếu không chạy
 		}
 	}
+
+	DebugOut(L"ISTUNNELDOOR: %d\n", isTunnelDoor);
+	//if (isSliding)
+	//{
+	//	ULONGLONG currentTime = GetTickCount64();
+
+	//	if (slidePhase == 1 && currentTime - slideStartTime < 500)
+	//	{
+	//		// Giai đoạn 1: Trượt xuống
+	//		vx = 0;
+	//		ax = 0;
+	//		ay = 0;
+	//		float process = (float)currentTime / 500;
+	//		y = startY - 32 * process;
+	//	}
+	//	else if (slidePhase == 1 && currentTime - slideStartTime >= 500)
+	//	{
+	//		slidePhase = 2; // Chuyển sang giai đoạn 2
+	//		slideStartTime = currentTime; // Reset thời gian bắt đầu trượt
+	//		DebugOut(L"[INFO] Mario finished sliding phase 1, now in phase 2\n");
+	//	}
+	//	else if (slidePhase == 2 && currentTime - slideStartTime < 500)
+	//	{
+	//		// Giai đoạn 2: Trượt xuống và dừng lại
+	//		vx = 0;
+	//		ax = 0;
+	//		ay = 0;
+	//		float process = (float)currentTime / 500;
+	//		x = 10;
+	//		y = startY - 32 * process;
+	//	}
+	//	else if (slidePhase == 2 && currentTime - slideStartTime >= 500)
+	//	{
+	//		isSliding = false; // Kết thúc trượt
+	//	}
+	//}
+	
+	InputTunnelDoor();
+	OutputTunnelDoor();
+	
+	
+	//else
+	//{
+	//	// Kích hoạt trượt lần 1
+	//	if (isTunnelDoor && CGame::GetInstance()->IsKeyDown(DIK_DOWN) && isOnPlatform && level == MARIO_LEVEL_RACOON && !isSitting && !isHolding && !isTailAttacking)
+	//	{
+	//		isSliding = true;
+	//		slideStartTime = GetTickCount64();
+	//		startY = y;
+	//		slidePhase = 1;
+	//		vx = 0;
+	//		ax = 0;
+	//		ay = 0;
+	//		DebugOut(L"[INFO] Mario started sliding phase 1 at y = %f\n", y);
+	//	}
+	//}
 
 
 	if (level == MARIO_LEVEL_RACOON)
@@ -296,6 +353,9 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 		OnCollisionWithLeaf(e);
 	else if (dynamic_cast<CButton*>(e->obj))
 		OnCollisionWithButton(e);
+	else if (dynamic_cast<CTunnel*> (e->obj))
+		OnCollisionWithTunnel(e);
+	
 
 
 
@@ -470,6 +530,25 @@ void CMario::OnCollisionWithLeaf(LPCOLLISIONEVENT e)
 			/*StartStunned();*/
 			StartStunned();
 			StartUntouchable();
+		}
+	}
+}
+
+void CMario::OnCollisionWithTunnel(LPCOLLISIONEVENT e)
+{
+	CTunnel* tunnel1 = dynamic_cast<CTunnel*>(e->obj);
+	if (tunnel1)
+	{
+		
+		if (tunnel1->GetNumberDoor() == 1 && isOnPlatform)
+		{
+			isTunnelDoor = 1;
+			
+
+		}
+		else if (tunnel1->GetNumberDoor() == 2 && e->ny > 0)
+		{
+			isTunnelDoor = 2;
 		}
 	}
 }
@@ -1101,3 +1180,130 @@ void CMario::Timer1sEvent()
 		}
 	}
 }
+
+void CMario::InputTunnelDoor()
+{
+	if (isSliding && isTunnelDoor == 1)
+	{
+		ULONGLONG now = GetTickCount64();
+		float elapsed = (float)(now - slideStartTime);
+		if (slidePhase == 1)
+		{
+			if (elapsed < MARIO_TUNNEL_DOOR_TIME) // Giai đoạn 1: Trượt xuống từ từ trong 500ms
+			{
+				float process = elapsed / MARIO_TUNNEL_DOOR_TIME; // Tỉ lệ thời gian đã trôi qua (0 -> 1)
+				y = startY + MARIO_TUNNEL_OFFSETY * process;    // Di chuyển y từ startY đến startY + 32
+				vx = 0;
+				ax = 0;
+				ay = 0;
+			}
+			else // Kết thúc giai đoạn 1, chuyển sang giai đoạn 2
+			{
+				y = startY + MARIO_TUNNEL_OFFSETY; // Đảm bảo y đạt đến vị trí cuối cùng
+
+
+				slidePhase = 2;
+				slideStartTime = GetTickCount64(); // Reset thời gian cho giai đoạn 2
+
+			}
+		}
+		else if (slidePhase == 2)
+
+		{
+			x = MARIO_X_TELEPORT_INPUT;
+			y = MARIO_Y_TELEPORT_INPUT;
+			startY = y;
+			if (elapsed < MARIO_TUNNEL_DOOR_TIME)
+			{
+
+				float process = elapsed / MARIO_TUNNEL_DOOR_TIME; 
+				y = startY + MARIO_TUNNEL_OFFSETY * process; 
+				vx = 0;
+				ax = 0;
+				ay = 0;
+			}
+			else // Kết thúc giai đoạn trượt
+			{
+
+				y = startY + MARIO_TUNNEL_OFFSETY;
+				isSliding = false;
+				slidePhase = 0;
+				vy = 0;
+				isTunnelDoor = false;
+			}
+		}
+	}
+	else if (isTunnelDoor ==1 && CGame::GetInstance()->IsKeyDown(DIK_DOWN) && isOnPlatform && level == MARIO_LEVEL_RACOON && !isSitting && !isHolding && !isTailAttacking)
+	{
+		isSliding = true;
+		slideStartTime = GetTickCount64();
+		startY = y;
+		slidePhase = 1;
+		vx = 0;
+		ax = 0;
+		ay = 0;
+		DebugOut(L"[INFO] Mario started sliding phase 1 at y = %f\n", y);
+	}
+}
+void CMario::OutputTunnelDoor()
+{
+	if(isSliding && isTunnelDoor == 2)
+	{
+		ULONGLONG now = GetTickCount64();
+		float elapsed = (float)(now - slideStartTime);
+		if (slidePhase == 1)
+		{
+			if (elapsed < MARIO_TUNNEL_DOOR_TIME) // Giai đoạn 1: Trượt lên từ từ trong 500ms
+			{
+				float process = elapsed / MARIO_TUNNEL_DOOR_TIME; 
+				y = startY - MARIO_TUNNEL_OFFSETY * process;    
+				ax = 0;
+				ay = 0;
+			}
+			else 
+			{
+				y = startY - MARIO_TUNNEL_OFFSETY; 
+				slidePhase = 2;
+				slideStartTime = GetTickCount64(); 
+			}
+		}
+		else if (slidePhase == 2)
+		{
+			x = MARIO_X_TELEPORT_OUTPUT; 
+			y = MARIO_Y_TELEPORT_OUTPUT; 
+			startY = y; 
+			if (elapsed < MARIO_TUNNEL_DOOR_TIME) 
+			{
+				float process = elapsed / MARIO_TUNNEL_DOOR_TIME; 
+				y = startY - MARIO_TUNNEL_OFFSETY * process; 
+				vx = 0;
+				ax = 0;
+				ay = 0;
+			}
+			else 
+			{
+				y = startY - MARIO_TUNNEL_OFFSETY; 
+				isSliding = false;
+				slidePhase = 0;
+				vy = 0;
+				isTunnelDoor = false;
+			}
+		}
+	}
+else
+{
+	// Kích hoạt trượt từ dưới lên
+	if (isTunnelDoor  == 2  && level == MARIO_LEVEL_RACOON && !isSitting && !isHolding && !isTailAttacking)
+	{
+		isSliding = true;
+		slideStartTime = GetTickCount64();
+		startY = y;
+		slidePhase = 1;
+		vx = 0;
+		ax = 0;
+		ay = 0;
+		DebugOut(L"[INFO] Mario started sliding phase 1 (upwards) at y = %f\n", y);
+	}
+	}
+}
+

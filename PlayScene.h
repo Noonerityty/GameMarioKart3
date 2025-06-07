@@ -21,6 +21,7 @@ protected:
 	vector<LPGAMEOBJECT> layerBacgrounds;
 	vector<LPGAMEOBJECT> questionBlocks;
 	vector<LPGAMEOBJECT> blocks;
+	vector<LPGAMEOBJECT> Verticalplatforms;
 
 	vector<LPGAMEOBJECT> objects;
 
