@@ -1,6 +1,7 @@
 ﻿#include "ParaKoopa.h"
 #include "debug.h"
-
+#include "Game.h"
+#include "PlayScene.h"
 
 void CParaKoopa::SetState(int state)
 {
@@ -70,48 +71,68 @@ void CParaKoopa::SetState(int state)
 
 void CParaKoopa::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
-	
-
-	vx += ax * dt;
-	vy += ay * dt;
-
-	if (state == KOOPA_STATE_DIE && GetTickCount64() - state_start > KOOPA_DIE_TIMEOUT)
+	CScene* currentScene = CGame::GetInstance()->GetCurrentScene();
+	CPlayScene* playscene = dynamic_cast<CPlayScene*>(currentScene);
+	if (playscene->IsInCameraView(x, y))
 	{
-		isDeleted = true;
+		isActive = true;
+	}
+	else
+	{
+		isActive = false;
 		return;
 	}
-
-	if (state == KOOPA_STATE_WALKING_WING && GetTickCount64() - state_start > KOOPA_WALKING_WING_TIMEOUT)
+	if (isActive)
 	{
-		SetState(KOOPA_STATE_JUMPING);
-	}
+		vx += ax * dt;
+		vy += ay * dt;
 
-	if (state == KOOPA_STATE_JUMPING)
-	{
-		if (willJump)
+		if (state == KOOPA_STATE_DIE && GetTickCount64() - state_start > KOOPA_DIE_TIMEOUT)
 		{
-			
-			vy = KOOPA_JUMPING_Y;
-			willJump = false;
-		/*	state_start = GetTickCount64();*/
+			isDeleted = true;
+			return;
 		}
-		if (GetTickCount64() - state_start > 500)
-		SetState(KOOPA_STATE_WALKING_WING);
+
+		if (state == KOOPA_STATE_WALKING_WING && GetTickCount64() - state_start > KOOPA_WALKING_WING_TIMEOUT)
+		{
+			SetState(KOOPA_STATE_JUMPING);
+		}
+
+		if (state == KOOPA_STATE_JUMPING)
+		{
+			if (willJump)
+			{
+
+				vy = KOOPA_JUMPING_Y;
+				willJump = false;
+				/*	state_start = GetTickCount64();*/
+			}
+			if (GetTickCount64() - state_start > 500)
+				SetState(KOOPA_STATE_WALKING_WING);
+		}
+		if (state == KOOPA_STATE_SHELL_IDLE && GetTickCount64() - state_start > KOOPA_SHELLING_TIMEOUT)
+		{
+			SetState(KOOPA_STATE_SHELL_EXIT);
+		}
+
+
+		if (state == KOOPA_STATE_SHELL_EXIT && GetTickCount64() - state_start > KOOPA_SHELL_EXIT_TIMEOUT)
+		{
+			SetState(KOOPA_STATE_WALKING);
+		}
+		if (state == KOOPA_STATE_SHELL_MOVING && GetTickCount64() - state_start > KOOPA_SHELL_PREDAMGE_TIMEOUT)
+		{
+			takeDamge = true;
+		}
 	}
-	if (state == KOOPA_STATE_SHELL_IDLE && GetTickCount64() - state_start > KOOPA_SHELLING_TIMEOUT)
+	else
 	{
-		SetState(KOOPA_STATE_SHELL_EXIT);
+		vx = 0;
+		vy = 0;
+
 	}
 
 
-	if (state == KOOPA_STATE_SHELL_EXIT && GetTickCount64() - state_start > KOOPA_SHELL_EXIT_TIMEOUT)
-	{
-		SetState(KOOPA_STATE_WALKING);
-	}
-	if (state == KOOPA_STATE_SHELL_MOVING && GetTickCount64() - state_start > KOOPA_SHELL_PREDAMGE_TIMEOUT)
-	{
-		takeDamge = true;
-	}
 
 	CGameObject::Update(dt, coObjects);
 	CCollision::GetInstance()->Process(this, dt, coObjects);

@@ -42,6 +42,7 @@ protected:
 	bool takeDamge;
 	ULONGLONG state_start;
 	float marioX;
+	bool isActive;
 	virtual void OnCollisionWithOtherKoopa(LPCOLLISIONEVENT e);
 	virtual void OnCollisionWithGoomba(LPCOLLISIONEVENT e);
 public:

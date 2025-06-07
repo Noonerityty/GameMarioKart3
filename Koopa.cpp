@@ -144,29 +144,49 @@ void CKoopa::SetState(int state)
 
 void CKoopa::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
-	vx += ax * dt;
-	vy += ay * dt;
-	if (state == KOOPA_STATE_DIE && GetTickCount64() - state_start > KOOPA_DIE_TIMEOUT)
+	CScene* currentScene = CGame::GetInstance()->GetCurrentScene();
+	CPlayScene* playscene = dynamic_cast<CPlayScene*>(currentScene);
+	if (playscene->IsInCameraView(x, y))
 	{
-		isDeleted = true;
+		isActive = true;
+	}
+	else
+	{
+		isActive = false;
 		return;
 	}
-
-	if (state == KOOPA_STATE_SHELL_IDLE && GetTickCount64() - state_start > KOOPA_SHELLING_TIMEOUT)
+	if (isActive)
 	{
-		SetState(KOOPA_STATE_SHELL_EXIT);
+		vx += ax * dt;
+		vy += ay * dt;
+		if (state == KOOPA_STATE_DIE && GetTickCount64() - state_start > KOOPA_DIE_TIMEOUT)
+		{
+			isDeleted = true;
+			return;
+		}
+
+		if (state == KOOPA_STATE_SHELL_IDLE && GetTickCount64() - state_start > KOOPA_SHELLING_TIMEOUT)
+		{
+			SetState(KOOPA_STATE_SHELL_EXIT);
+		}
+
+
+		if (state == KOOPA_STATE_SHELL_EXIT && GetTickCount64() - state_start > KOOPA_SHELL_EXIT_TIMEOUT)
+		{
+			SetState(KOOPA_STATE_WALKING);
+		}
+		if (state == KOOPA_STATE_SHELL_MOVING && GetTickCount64() - state_start > KOOPA_SHELL_PREDAMGE_TIMEOUT)
+		{
+			takeDamge = true;
+		}
+
 	}
-
-
-	if (state == KOOPA_STATE_SHELL_EXIT && GetTickCount64() - state_start > KOOPA_SHELL_EXIT_TIMEOUT)
+	else
 	{
-		SetState(KOOPA_STATE_WALKING);
+		vx = 0;
+		vy = 0;
 	}
-	if (state == KOOPA_STATE_SHELL_MOVING && GetTickCount64() - state_start > KOOPA_SHELL_PREDAMGE_TIMEOUT)
-	{
-		takeDamge = true;
-	}
-
+	
 	CGameObject::Update(dt, coObjects);
 	CCollision::GetInstance()->Process(this, dt, coObjects);
 }

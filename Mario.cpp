@@ -369,6 +369,7 @@ void CMario::OnCollisionWithKoopa(LPCOLLISIONEVENT e)
 	
 	if (e->ny < 0)
 	{
+		score += 100;
 		if (koopa->GetState() == KOOPA_STATE_WALKING)
 		{
 			koopa->SetState(KOOPA_STATE_SHELL_IDLE);
@@ -432,6 +433,7 @@ void CMario::OnCollisionWithKoopa(LPCOLLISIONEVENT e)
 
 void CMario::ReleaseKoopa()
 {
+	score += 200;
 	if (heldKoopa && isHolding)
 	{
 		heldKoopa->SetState(KOOPA_STATE_SHELL_MOVING);
@@ -479,6 +481,7 @@ void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 	// jump on top >> kill Goomba and deflect a bit 
 	if (e->ny < 0)
 	{
+		score += 100;
 		if (goomba->GetState() != GOOMBA_STATE_DIE)
 		{
 			goomba->SetState(GOOMBA_STATE_DIE);
@@ -501,18 +504,25 @@ void CMario::OnCollisionWithCoin(LPCOLLISIONEVENT e)
 {
 	e->obj->Delete();
 	coin++;
+	score += 200;
 }
 void CMario::OnCollisionWithMushroom(LPCOLLISIONEVENT e)
 {
 	CMushroom* mushroom = dynamic_cast<CMushroom*>(e->obj);
 	if (mushroom->GetState() != MUSHROOM_STATE_DIE)
 	{
+		score += 1000;
 		if (level == MARIO_LEVEL_SMALL)
 		{
 			SetLevel(MARIO_LEVEL_BIG);
 			mushroom->SetState(MUSHROOM_STATE_DIE);
+			
 			StartStunned();
 			StartUntouchable();
+		}
+		else
+		{
+			mushroom->SetState(MUSHROOM_STATE_DIE);
 		}
 	}
 }
@@ -523,6 +533,7 @@ void CMario::OnCollisionWithLeaf(LPCOLLISIONEVENT e)
 		CLeaf* leaf = dynamic_cast<CLeaf*>(e->obj);
 	if (leaf->GetState() != LEAF_STATE_DIE)
 	{
+		score += 1000;
 		if (level == MARIO_LEVEL_SMALL || level == MARIO_LEVEL_BIG)
 		{
 			SetLevel(MARIO_LEVEL_RACOON);
@@ -530,6 +541,10 @@ void CMario::OnCollisionWithLeaf(LPCOLLISIONEVENT e)
 			/*StartStunned();*/
 			StartStunned();
 			StartUntouchable();
+		}
+		else
+		{
+			leaf->SetState(LEAF_STATE_DIE);
 		}
 	}
 }
@@ -566,10 +581,11 @@ void CMario::OnCollisionWithQuestionBlock(LPCOLLISIONEVENT e)
 	if (e->ny > 0)
 	{
 		qblock->TriggerQuestionBlock();
+		score += 50;
 	}
 	/*DebugOut(L"[INFO] Mario hit question block\n");*/
-	if(qblock->GetItemType() == 0)
-	coin++;
+	/*if(qblock->GetItemType() == 0)
+	coin++;*/
 
 }
 

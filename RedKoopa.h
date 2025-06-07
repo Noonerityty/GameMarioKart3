@@ -16,6 +16,7 @@ public:
 		this->ay = KOOPA_GRAVITY;
 		isShell = false;
 		SetState(KOOPA_STATE_WALKING);
+		isActive = true;
 	}
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) override;
 	void Render() override;

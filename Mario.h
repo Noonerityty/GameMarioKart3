@@ -300,6 +300,7 @@ public:
 	bool isHoldingKoopa() { return isHolding; }
 	int GetLevel() { return level; }
 	bool GetIsSitting() { return isSitting; }
+	int GetScore() { return score; }
 
 
 	void Timer1sEvent();

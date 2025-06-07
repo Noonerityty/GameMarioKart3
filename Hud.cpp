@@ -10,6 +10,7 @@ void CHud::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		timer = player->GetTimer();
 		lives = player->GetLives();
 		p_meter = player->GetPMeter();
+		score = player->GetScore();
 
 		CGame* game = CGame::GetInstance();
 		float cam_x, cam_y;
